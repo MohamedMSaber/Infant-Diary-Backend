@@ -1,8 +1,8 @@
-// const parentRouter = require("./components/User/Parent/parent.api")
+const parentRouter = require("./components/User/Parent/parent.api")
 
 
 
 
-// module.exports={
-//     parentRouter
-// }
+module.exports={
+    parentRouter
+}
