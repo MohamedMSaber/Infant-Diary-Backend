@@ -1,4 +1,4 @@
-const parentModel = require('./parent.model')
+const parentModel = require('../user.model')
 const AppError = require("../../../utils/AppError");
 const { catchAsyncErrors } = require("../../../utils/catchAsync");
 const bcrypt = require('bcrypt');
