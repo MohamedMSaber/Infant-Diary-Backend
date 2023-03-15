@@ -10,8 +10,7 @@ const schema = Schema({
     gender: { type: String, required: [true, 'gender is required'], enum: ['Male', 'Female'],},
     address: { type: String,required: [true, 'address is required']},
     isBlocked: { type: Boolean, default: false },
-    emailConfirm: { type: Boolean, default: false},
-    role:{ type: String, enum: ["admin", "parent"], default: "parent"}
+    emailConfirm: { type: Boolean, default: false}
 },{ timestamps: true })
 
 
@@ -26,4 +25,4 @@ schema.pre('findOneAndUpdate', async function (next) {
     this.set({ __v: hookData.__v + 1 });
     next();
 })
-module.exports = model('user', schema)
+module.exports = model('parent', schema)
