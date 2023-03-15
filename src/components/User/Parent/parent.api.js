@@ -1,10 +1,10 @@
-const { signup, confirmEmail, signIn } = require('./parent.auth')
-
+const {  confirmEmail, signIn } = require('./parent.auth')
+const{signup} = require('../user.auth')
 
 const router=require('express').Router()
 
-router.post("/signup",signup)
-router.get("/confirmEmail/:id",confirmEmail)
+router.post("/:userType/signup",signup)
+router.get("/:userType/confirmEmail/:id",confirmEmail)
 router.post("/signIn",signIn)
 // router.get("/refreshEmail/:id",refreshEmail)
 
