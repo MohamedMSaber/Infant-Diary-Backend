@@ -1,8 +1,8 @@
-const parentRouter = require("./components/User/Parent/parent.api")
+const authRouter = require("./components/User/Auth/auth.api")
 
 
 
 
 module.exports={
-    parentRouter
+    authRouter
 }

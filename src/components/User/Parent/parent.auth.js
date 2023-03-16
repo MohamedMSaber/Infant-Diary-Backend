@@ -44,8 +44,3 @@ const signIn = catchAsyncErrors(async (req, res, next) => {
     res.status(200).json({ token})
 })
 
-module.exports = {
-    signup,
-    confirmEmail,
-    signIn
-}
