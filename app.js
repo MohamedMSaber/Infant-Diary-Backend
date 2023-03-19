@@ -16,6 +16,7 @@ if (process.env.MODE_ENV === 'devolpment') {
 
 app.use("/api/v1" , indexRouter.authRouter)
 app.use("/api/v1/parent", indexRouter.parentRouter)
+app.use("/api/v1/admin", indexRouter.adminRouter)
 
 app.all('*', (req, res,next) =>{
     next(new AppError(`Route : ${req.originalUrl} not found on Server`, 404));
