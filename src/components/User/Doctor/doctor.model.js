@@ -1,4 +1,4 @@
-const { Schema, model} = require("mongoose");
+const { Schema, model, Types} = require("mongoose");
 const bcrypt = require('bcrypt');
 
 const schema = Schema({
@@ -10,7 +10,9 @@ const schema = Schema({
     gender: { type: String, required: [true, 'gender is required'], enum: ['Male', 'Female'],},
     isBlocked: { type: Boolean, default: false },
     nationalIdPhoto: {type: String, required:[true, 'National ID Image is Required']},
-    isAccpeted:{type: Boolean, default: false}
+    isAccpeted:{type: Boolean, default: false},
+    clinc:[{ type: Types.ObjectId , ref:"clinic" }],
+    role:{type: String, default:'doctor'}
 },{ timestamps: true })
 
 schema.pre('save', async function () { 

@@ -4,7 +4,6 @@ const bcrypt = require('bcrypt');
 const schema = Schema({
     name: { type: String, required: [true, 'name is required']},
     email: { type: String, required: [true, 'email is required'], unique: true},
-    password: { type: String, required: [true, 'password is required']},
     address: { type: String, required: [true, 'address is required']},
     city: { type: String, required: [true, 'city is required']},
     state: { type: String, required: [true,'state is required']},

@@ -1,4 +1,4 @@
-const { Schema, model} = require("mongoose");
+const { Schema, model, default: mongoose, Types} = require("mongoose");
 const bcrypt = require('bcrypt');
 
 const schema = Schema({
@@ -10,7 +10,7 @@ const schema = Schema({
     state: { type: String, required: [true,'state is required']},
     zip: { type: String, required: [true, 'zip is required']},
     phone: { type: String, required: [true, 'phone number is required']},
-    services:{type: String, required: [true, 'services is required']},
+    services:[{type:Types.ObjectId , ref:"service"}],
     link: { type: String, required: [true, 'hospital link is required']},
     vaccines:[{type:mongoose.Schema.Types.ObjectId,ref:"vaccine"}],
    
