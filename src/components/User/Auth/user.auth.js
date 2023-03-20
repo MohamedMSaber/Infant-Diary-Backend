@@ -76,9 +76,37 @@ const signIn = catchAsyncErrors(async (req, res, next) => {
     res.status(200).json({ token})
 })
 
+// Authentication
+const ProtectedRoutes = catchAsyncErrors(async(req,res,next)=>{
+    let {userType} = req.params;
+    //1. check if token Provieded
+    let token = req.headers.token;
+    if(!token) return next(new AppError('Token is required' , 401))    
+    // 2. check if token is valid
+    let decodedToken = await jwt.verify(token, process.env.JWT_KEY)
+    // 3. check if token user Id is already exist
+    let user = await userType.findById(decodedToken.userId);
+    if (!user) {
+        return next(new AppError("User Not Exists" , 401))
+    }
+    req.user = user;
+    next();
+})
 
+
+// Authorization
+const AllowedTo = (...roles)=>{
+    return catchAsyncErrors(async(req,res,next)=>{
+        if(roles.includes(req.user.role)){
+            return next(new AppError("You not Authorized to Access This Route" , 401))
+        }
+        next();
+    })
+}
 module.exports = {
     signup,
     confirmEmail,
-    signIn
+    signIn,
+    ProtectedRoutes,
+    AllowedTo
 }

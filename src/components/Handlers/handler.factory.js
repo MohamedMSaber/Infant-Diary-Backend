@@ -13,6 +13,8 @@ const deleteFun = (Model) => {
     res.status(200).json({ message: `document has Been Deleted`  , document});
 })
 }
+
+
 const updateFun = (Model) => {
     return catchAsyncErrors(async (req, res,next) => {
     const { id } = req.params;
