@@ -1,6 +1,7 @@
 const { catchAsyncErrors } = require('../../../utils/catchAsync');
 const parentModel = require('../Parent/parent.model')
 const doctorModel = require('../Doctor/doctor.model');
+const adminModel = require('../Admin/admin.model')
 const sendEmail = require('../../../utils/sendEmail');
 const AppError = require('../../../utils/AppError');
 const bcrypt = require('bcrypt');
@@ -79,13 +80,30 @@ const signIn = catchAsyncErrors(async (req, res, next) => {
 // Authentication
 const ProtectedRoutes = catchAsyncErrors(async(req,res,next)=>{
     let {userType} = req.params;
+    let newModel;
+    let user;
+    if (userType !== 'parent' && userType !== 'doctor' && userType !== 'admin') {
+        return next(new AppError("Invalid user type"));
+    }
+    else {
+        if (userType === 'parent') {
+            newModel = parentModel;
+        }
+        else if(userType === 'doctor'){
+            newModel = doctorModel;
+        }
+        else if(userType === 'admin'){
+            newModel = adminModel;
+        }
+    }
     //1. check if token Provieded
     let token = req.headers.token;
     if(!token) return next(new AppError('Token is required' , 401))    
     // 2. check if token is valid
     let decodedToken = await jwt.verify(token, process.env.JWT_KEY)
     // 3. check if token user Id is already exist
-    let user = await userType.findById(decodedToken.userId);
+    user = await newModel.findById(decodedToken.userId);
+    console.log(user);
     if (!user) {
         return next(new AppError("User Not Exists" , 401))
     }
@@ -97,7 +115,7 @@ const ProtectedRoutes = catchAsyncErrors(async(req,res,next)=>{
 // Authorization
 const AllowedTo = (...roles)=>{
     return catchAsyncErrors(async(req,res,next)=>{
-        if(roles.includes(req.user.role)){
+        if(!roles.includes(req.user.role)){
             return next(new AppError("You not Authorized to Access This Route" , 401))
         }
         next();

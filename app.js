@@ -17,7 +17,7 @@ if (process.env.MODE_ENV === 'devolpment') {
 app.use("/api/v1" , indexRouter.authRouter)
 app.use("/api/v1/parent", indexRouter.parentRouter)
 app.use("/api/v1/admin", indexRouter.adminRouter)
-app.use("/api/v1/announcement", indexRouter.announcementRouter)
+app.use("/api/v1", indexRouter.announcementRouter)
 app.use("/api/v1/question", indexRouter.questionRouter)
 app.use("/api/v1/post", indexRouter.postRouter)
 app.use("/api/v1/comment", indexRouter.commentRouter)
