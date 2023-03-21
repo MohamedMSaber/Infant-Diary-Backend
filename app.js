@@ -18,6 +18,10 @@ app.use("/api/v1" , indexRouter.authRouter)
 app.use("/api/v1/parent", indexRouter.parentRouter)
 app.use("/api/v1/admin", indexRouter.adminRouter)
 
+app.use("/api/v1/announcement", indexRouter.announcementRouter)
+
+app.use("/api/v1/question", indexRouter.questionRouter)
+
 app.all('*', (req, res,next) =>{
     next(new AppError(`Route : ${req.originalUrl} not found on Server`, 404));
 })

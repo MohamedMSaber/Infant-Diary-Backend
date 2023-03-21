@@ -165,3 +165,4 @@ exports.addChild = catchAsyncErrors(async (req, res) => {
     await child.save();
     res.status(200).json({child,message:"You have been added your child Successfully..."});
   });
+  
