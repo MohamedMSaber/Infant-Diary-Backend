@@ -14,10 +14,10 @@ exports.addAnnouncement = catchAsyncErrors(async (req, res) => {
 /// Update Announcement
 exports.updateAnnouncement = updateFun(announcementModel);
 /// Delete Announcement
-  exports.deleteAnnouncement = deleteFun(announcementModel);
+exports.deleteAnnouncement = deleteFun(announcementModel);
 /// Get All Announcements
-  exports.getAnnouncements = getAllFun(announcementModel);
+exports.getAnnouncements = getAllFun(announcementModel);
 /// Get Specific Announcement
-  exports.getAnnouncement = getSpecficFun(announcementModel);
+exports.getAnnouncementByID = getSpecficFun(announcementModel);
 
 
