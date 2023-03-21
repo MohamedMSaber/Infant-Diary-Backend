@@ -6,6 +6,10 @@ const announcementRouter = require("./components/Announcement/announcement.api")
 
 const questionRouter = require("./components/Question/question.api")
 
+const postRouter = require("./components/Post/post.api")
+
+const commentRouter = require("./components/Comment/comment.api")
+
 
 
 
@@ -15,5 +19,7 @@ module.exports={
     parentRouter,
     adminRouter,
     announcementRouter,
-    questionRouter
+    questionRouter,
+    postRouter,
+    commentRouter
 }

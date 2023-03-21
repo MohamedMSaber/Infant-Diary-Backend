@@ -22,6 +22,10 @@ app.use("/api/v1/announcement", indexRouter.announcementRouter)
 
 app.use("/api/v1/question", indexRouter.questionRouter)
 
+app.use("/api/v1/post", indexRouter.postRouter)
+
+app.use("/api/v1/comment", indexRouter.commentRouter)
+
 app.all('*', (req, res,next) =>{
     next(new AppError(`Route : ${req.originalUrl} not found on Server`, 404));
 })

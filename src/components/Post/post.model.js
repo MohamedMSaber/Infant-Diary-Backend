@@ -1,13 +1,13 @@
-const { Schema, model} = require("mongoose");
+const { Schema, model,Types} = require("mongoose");
 
 
 const schema = Schema({
     body: { type: String, required: [true, 'body is required']},
     image:{type:Array},
-    createdBy:{type:mongoose.Schema.Types.ObjectId,ref:"User",required:true},
-    comments:[{type:mongoose.Schema.Types.ObjectId,ref:"comment"}],
+    createdBy:{type: Types.ObjectId,ref:"User",required:true},
+    comments:[{type: Types.ObjectId,ref:"comment"}],
     isDeleted:{type:Boolean,default:false},
-    deletedBy:{type:mongoose.Schema.Types.ObjectId,ref:"User"},
+    deletedBy:{type: Types.ObjectId,ref:"User"},
 },{ timestamps: true })
 
 
