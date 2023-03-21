@@ -1,13 +1,10 @@
-const { addComment, editComment, deleteComment, getComments, getComment } = require('./comment.services');
-
-
-
+const { ProtectedRoutes, AllowedTo } = require('../User/Auth/user.auth');
+const { getComments, getComment, editComment, deleteComment, addComment } = require('./comment.services');
 const router=require('express').Router();
 
-router.post("/addComment",addComment);
-router.put("/:id/editComment",editComment);
-router.delete("/:id/deleteComment",deleteComment);
-router.get("/comments",getComments);
-router.get("/comments/:id",getComment);
+
+router.route('/:userType').post(ProtectedRoutes,AllowedTo(['admin']),addComment);
+router.route('/').get(getComments);
+router.route('/:id').get(getComment).put(editComment).delete(deleteComment);
 
 module.exports= router
