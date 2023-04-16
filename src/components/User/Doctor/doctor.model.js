@@ -11,6 +11,7 @@ const schema = Schema({
     isBlocked: { type: Boolean, default: false },
     nationalIdPhoto: {type: String, required:[true, 'National ID Image is Required']},
     isAccpeted:{type: Boolean, default: false},
+    specialization: { type: String, required: [true, 'name is required'], trim: true, minLenght: 3},
     clinc:[{ type: Types.ObjectId , ref:"clinic" }],
     role:{type: String, default:'doctor'}
 },{ timestamps: true })
