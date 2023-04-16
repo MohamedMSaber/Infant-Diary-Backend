@@ -6,12 +6,12 @@ const schema = Schema({
     email: { type: String, required: [true, 'email is required'], unique: true},
     password: { type: String, required: [true, 'password is required']},
     address: { type: String, required: [true, 'address is required']},
-    city: { type: String, required: [true, 'city is required']},
-    state: { type: String, required: [true,'state is required']},
-    zip: { type: String, required: [true, 'zip is required']},
-    phone: { type: String, required: [true, 'phone number is required']},
+    city: { type: String},
+    state: { type: String},
+    zip: { type: String},
+    phone: { type: String},
     services:[{type:Types.ObjectId , ref:"service"}],
-    link: { type: String, required: [true, 'hospital link is required']},
+    link: { type: String},
     vaccines:[{type:mongoose.Schema.Types.ObjectId,ref:"vaccine"}],
    
 },{ timestamps: true })
