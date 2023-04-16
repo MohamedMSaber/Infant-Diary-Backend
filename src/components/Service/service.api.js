@@ -3,7 +3,8 @@ const { createSercice, getServices, getService, updateService, deleteService } =
 const router=require('express').Router();
 
 
-router.route('/:userType').post(ProtectedRoutes,AllowedTo(['hospital']),createSercice);
+//router.route('/:userType').post(ProtectedRoutes,AllowedTo(['hospital']),createSercice);
+router.route('/').post(createSercice);
 router.route('/').get(getServices);
 router.route('/:id').get(getService).put(updateService).delete(deleteService);
 

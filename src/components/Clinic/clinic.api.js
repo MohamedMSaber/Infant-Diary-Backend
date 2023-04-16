@@ -3,7 +3,8 @@ const { createClinic, getClinic, updateClinic, deleteClinic, getClinics } = requ
 const router=require('express').Router();
 
 
-router.route('/:userType').post(ProtectedRoutes,AllowedTo(['doctor']),createClinic);
+//router.route('/:userType').post(ProtectedRoutes,AllowedTo(['doctor']),createClinic);
+router.route('/').post(createClinic);
 router.route('/').get(getClinics);
 router.route('/:id').get(getClinic).put(updateClinic).delete(deleteClinic);
 
