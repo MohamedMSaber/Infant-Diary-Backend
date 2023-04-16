@@ -3,7 +3,7 @@ const { updateFun, deleteFun, getAllFun, getSpecficFun } = require("../Handlers/
 const announcementModel = require("./announcement.model");
 
 
-/// Add Announcement
+/// Add Announcement by the admin
 exports.addAnnouncement = catchAsyncErrors(async (req, res) => {
     const {title,body}= req.body;
     let announcement = new announcementModel(req.body);
