@@ -7,4 +7,4 @@ const schema = Schema({
 },{ timestamps: true })
 
 
-module.exports = model('post' , schema);
+module.exports = model('service' , schema);
