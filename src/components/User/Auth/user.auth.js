@@ -6,6 +6,7 @@ const sendEmail = require('../../../utils/sendEmail');
 const AppError = require('../../../utils/AppError');
 const bcrypt = require('bcrypt');
 const jwt= require("jsonwebtoken");
+const cloudinary = require('../../../utils/cloudinary');
 
 // sign Up
 const signup = catchAsyncErrors(async(req , res , next)=>{
@@ -24,15 +25,23 @@ const signup = catchAsyncErrors(async(req , res , next)=>{
     }
     user =  await newModel.findOne({ email: req.body.email });
     if (!user) {
-        let newUser = new newModel(req.body);
-        await newUser.save();
-        if (userType === 'parent') {
+        if (userType == 'doctor'){
+            console.log(req.file);
+            const image =await  cloudinary.uploader.upload(req.file.path , {folder: "DoctorsNationalIDs"})
+            req.body.nationalIdPhoto =  image.secure_url;
+            let newDoctor = new newModel(req.body);
+            await newDoctor.save();
+            res.status(200).json({ Doctor:newDoctor , message :  "Sign Up Successfull...'\n'We will review your profile and contact you SOON😊..." });
+            console.log(newDoctor)
+        }
+        else if (userType === 'parent') {
+            let newUser = new newModel(req.body);
+            await newUser.save();
             const html = `<a href = "${req.protocol}://${req.headers.host}/api/v1/${userType}/confirmEmail/${newUser._id}">Click Here To Confirm Email</a?`;
             sendEmail(newUser.email , html )
             res.status(200).json({ Email:newUser.email , message :  "Sign Up Successfully...plz confirm your EMAIL..." });
-        } else {
-            res.status(200).json({ Email:newUser.email , message :  "Sign Up Successfull...'\n'We will review your profile and contact you SOON😊..." });
-        }
+        } 
+
     }
     else {
         return next(new AppError(`User Already Exist`, 400));
@@ -121,6 +130,8 @@ const AllowedTo = (...roles)=>{
         next();
     })
 }
+
+
 module.exports = {
     signup,
     confirmEmail,
