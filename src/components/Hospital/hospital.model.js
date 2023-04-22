@@ -16,5 +16,8 @@ const schema = Schema({
    
 },{ timestamps: true })
 
+schema.pre('save', async function () { 
+    this.password = await bcrypt.hash(this.password, parseInt(process.env.saltRound))
+})
 
 module.exports = model('hospital' , schema);

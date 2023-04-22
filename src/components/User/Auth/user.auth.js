@@ -2,6 +2,7 @@ const { catchAsyncErrors } = require('../../../utils/catchAsync');
 const parentModel = require('../Parent/parent.model')
 const doctorModel = require('../Doctor/doctor.model');
 const adminModel = require('../Admin/admin.model')
+const hospitalModel = require('../../Hospital/hospital.model')
 const sendEmail = require('../../../utils/sendEmail');
 const AppError = require('../../../utils/AppError');
 const bcrypt = require('bcrypt');
@@ -13,14 +14,17 @@ const signup = catchAsyncErrors(async(req , res , next)=>{
     let {userType} = req.params;
     let user ;
     let newModel;
-    if (userType !== 'parent' && userType !== 'doctor') {
+    if (userType !== 'parent' && userType !== 'doctor' && userType !== 'hospital') {
         return next(new AppError("Invalid user type"));
     }
     else {
         if (userType === 'parent') {
             newModel = parentModel;
-        } else {
+        } else if (userType === 'doctor') {
             newModel = doctorModel;
+        }
+        else{
+            newModel = hospitalModel;
         }
     }
     user =  await newModel.findOne({ email: req.body.email });
@@ -31,7 +35,7 @@ const signup = catchAsyncErrors(async(req , res , next)=>{
             req.body.nationalIdPhoto =  image.secure_url;
             let newDoctor = new newModel(req.body);
             await newDoctor.save();
-            res.status(200).json({ Doctor:newDoctor , message :  "Sign Up Successfull...'\n'We will review your profile and contact you SOON😊..." });
+            res.status(200).json({ Doctor:newDoctor , message :  "Sign Up Successful...'\n'We will review your profile and contact you SOON😊..." });
             console.log(newDoctor)
         }
         else if (userType === 'parent') {
@@ -40,7 +44,13 @@ const signup = catchAsyncErrors(async(req , res , next)=>{
             const html = `<a href = "${req.protocol}://${req.headers.host}/api/v1/${userType}/confirmEmail/${newUser._id}">Click Here To Confirm Email</a?`;
             sendEmail(newUser.email , html )
             res.status(200).json({ Email:newUser.email , message :  "Sign Up Successfully...plz confirm your EMAIL..." });
-        } 
+        }
+        else{
+            let newHospital = new newModel(req.body);
+            await newHospital.save();
+            res.status(200).json({ Hospital:newHospital , message :  "Sign Up Successful...'\n'We will review your profile and contact you SOON😊..." });
+            console.log(newHospital)
+        }
 
     }
     else {
@@ -62,14 +72,17 @@ const signIn = catchAsyncErrors(async (req, res, next) => {
     let {userType} = req.params;
     let user ;
     let newModel;
-    if (userType !== 'parent' && userType !== 'doctor') {
+    if (userType !== 'parent' && userType !== 'doctor' && userType !== 'hospital') {
         return next(new AppError("Invalid user type"));
     }
     else {
         if (userType === 'parent') {
             newModel = parentModel;
-        } else {
+        } else if (userType === 'doctor') {
             newModel = doctorModel;
+        }
+        else{
+            newModel = hospitalModel;
         }
     }
     user = await newModel.findOne({ email: req.body.email });

@@ -7,8 +7,8 @@ const hospitalModel = require("./hospital.model");
 /// update hospital
 exports.updateHospital = updateFun(hospitalModel);
 /// Delete hospital
-  exports.deleteHospital = deleteFun(hospitalModel);
+exports.deleteHospital = deleteFun(hospitalModel);
 /// Get All hospitals
-  exports.getHospitals = getAllFun(hospitalModel);
+exports.getHospitals = getAllFun(hospitalModel);
 /// Get Specific hospital
-  exports.getHospital = getSpecficFun(hospitalModel);
+exports.getHospital = getSpecficFun(hospitalModel);
