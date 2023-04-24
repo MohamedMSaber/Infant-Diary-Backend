@@ -1,5 +1,6 @@
 const { catchAsyncErrors } = require("../../utils/catchAsync");
 const { updateFun, deleteFun, getAllFun, getSpecficFun } = require("../Handlers/handler.factory");
+const ApiFeatures = require("../../utils/ApiFeatures")
 const commentModel = require("./comment.model");
 
 
@@ -12,13 +13,17 @@ exports.addComment = catchAsyncErrors(async (req, res) => {
     await comment.save();
     res.status(200).json({comment,message:"You have been created comment Successfully..."});
 });
-
+exports.getComments = catchAsyncErrors(async (req, res) => {
+  let apiFeatures = new ApiFeatures(commentModel.find(), req.query).paginate().fields().filter().sort()
+  Products = await apiFeatures.mongooseQuery
+  res.status(200).json({ page: apiFeatures.page, Products });
+});
 /// Edit comment
 exports.editComment = updateFun(commentModel);
 /// Delete comment
   exports.deleteComment = deleteFun(commentModel);
 /// Get All comments
-  exports.getComments = getAllFun(commentModel);
+//exports.getComments = getAllFun(commentModel);
 /// Get Specific comment
   exports.getComment = getSpecficFun(commentModel);
 

@@ -1,5 +1,6 @@
 const { catchAsyncErrors } = require("../../utils/catchAsync");
 const { updateFun, deleteFun, getAllFun, getSpecficFun } = require("../Handlers/handler.factory");
+const ApiFeatures = require("../../utils/ApiFeatures")
 const postModel = require("./post.model");
 
 
@@ -11,13 +12,18 @@ exports.createPost = catchAsyncErrors(async (req, res) => {
     await post.save();
     res.status(200).json({post,message:"You have been created post Successfully..."});
 });
+exports.getPosts = catchAsyncErrors(async (req, res) => {
+  let apiFeatures = new ApiFeatures(postModel.find(), req.query).paginate().fields().filter().sort()
+  Products = await apiFeatures.mongooseQuery
+  res.status(200).json({ page: apiFeatures.page, Products });
+});
 
 /// Edit Post
 exports.editPost = updateFun(postModel);
 /// Delete Post
   exports.deletePost = deleteFun(postModel);
 /// Get All Posts
-  exports.getPosts = getAllFun(postModel);
+//exports.getPosts = getAllFun(postModel);
 /// Get Specific Post
   exports.getPost = getSpecficFun(postModel);
 

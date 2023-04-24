@@ -1,14 +1,20 @@
 const { catchAsyncErrors } = require("../../utils/catchAsync");
 const { updateFun, deleteFun, getAllFun, getSpecficFun } = require("../Handlers/handler.factory");
+const ApiFeatures = require("../../utils/ApiFeatures")
 const hospitalModel = require("./hospital.model");
 
 
 
+exports.getHospitals = catchAsyncErrors(async (req, res) => {
+  let apiFeatures = new ApiFeatures(hospitalModel.find(), req.query).paginate().fields().filter().sort()
+  Products = await apiFeatures.mongooseQuery
+  res.status(200).json({ page: apiFeatures.page, Products });
+});
 /// update hospital
 exports.updateHospital = updateFun(hospitalModel);
 /// Delete hospital
 exports.deleteHospital = deleteFun(hospitalModel);
 /// Get All hospitals
-exports.getHospitals = getAllFun(hospitalModel);
+//exports.getHospitals = getAllFun(hospitalModel);
 /// Get Specific hospital
 exports.getHospital = getSpecficFun(hospitalModel);
