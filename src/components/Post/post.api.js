@@ -4,7 +4,7 @@ const router=require('express').Router();
 
 
 router.route('/:userType').post(ProtectedRoutes,AllowedTo(['admin']),createPost);
-router.route('/').get(getPosts);
+router.route('').get(getPosts);
 router.route('/:id').get(getPost).put(editPost).delete(deletePost);
 
 module.exports= router

@@ -14,8 +14,13 @@ exports.createPost = catchAsyncErrors(async (req, res) => {
 });
 exports.getPosts = catchAsyncErrors(async (req, res) => {
   let apiFeatures = new ApiFeatures(postModel.find(), req.query).paginate().fields().filter().sort()
-  Products = await apiFeatures.mongooseQuery
-  res.status(200).json({ page: apiFeatures.page, Products });
+
+  if (req.query.keyword) {
+    let word = req.query.keyword
+    apiFeatures.mongooseQuery.find({ $or: [{ body: { $regex: word, $options: 'i' } }] })
+  }
+  posts = await apiFeatures.mongooseQuery
+  res.status(200).json({ page: apiFeatures.page, posts });
 });
 
 /// Edit Post
