@@ -7,8 +7,13 @@ const hospitalModel = require("./hospital.model");
 
 exports.getHospitals = catchAsyncErrors(async (req, res) => {
   let apiFeatures = new ApiFeatures(hospitalModel.find(), req.query).paginate().fields().filter().sort()
-  Products = await apiFeatures.mongooseQuery
-  res.status(200).json({ page: apiFeatures.page, Products });
+
+  if (req.query.keyword) {
+    let word = req.query.keyword
+    apiFeatures.mongooseQuery.find({ $or: [{ name: { $regex: word, $options: 'i' } }, { address: { $regex: word, $options: 'i' } },{ link: { $regex: word, $options: 'i' } }] })
+  }
+  hospitals = await apiFeatures.mongooseQuery
+  res.status(200).json({ page: apiFeatures.page, hospitals });
 });
 /// update hospital
 exports.updateHospital = updateFun(hospitalModel);
