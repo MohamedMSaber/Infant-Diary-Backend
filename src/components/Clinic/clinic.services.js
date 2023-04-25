@@ -15,8 +15,13 @@ exports.createClinic = catchAsyncErrors(async (req, res) => {
 
 exports.getClinics = catchAsyncErrors(async (req, res) => {
   let apiFeatures = new ApiFeatures(clinicModel.find(), req.query).paginate().fields().filter().sort()
-  Products = await apiFeatures.mongooseQuery
-  res.status(200).json({ page: apiFeatures.page, Products });
+
+  if (req.query.keyword) {
+    let word = req.query.keyword
+    apiFeatures.mongooseQuery.find({ $or: [{ name: { $regex: word, $options: 'i' } }, { address: { $regex: word, $options: 'i' } },{ link: { $regex: word, $options: 'i' } }] })
+  }
+  clinics = await apiFeatures.mongooseQuery
+  res.status(200).json({ page: apiFeatures.page, clinics });
 });
 /// update clinic
 exports.updateClinic = updateFun(clinicModel);
