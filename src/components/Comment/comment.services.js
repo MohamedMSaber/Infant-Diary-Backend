@@ -15,8 +15,13 @@ exports.addComment = catchAsyncErrors(async (req, res) => {
 });
 exports.getComments = catchAsyncErrors(async (req, res) => {
   let apiFeatures = new ApiFeatures(commentModel.find(), req.query).paginate().fields().filter().sort()
-  Products = await apiFeatures.mongooseQuery
-  res.status(200).json({ page: apiFeatures.page, Products });
+
+  if (req.query.keyword) {
+    let word = req.query.keyword
+    apiFeatures.mongooseQuery.find({ $or: [{ body: { $regex: word, $options: 'i' } }] })
+  }
+  comments = await apiFeatures.mongooseQuery
+  res.status(200).json({ page: apiFeatures.page, comments });
 });
 /// Edit comment
 exports.editComment = updateFun(commentModel);
