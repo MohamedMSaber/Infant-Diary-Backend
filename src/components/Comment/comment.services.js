@@ -26,5 +26,3 @@ exports.editComment = updateFun(commentModel);
 //exports.getComments = getAllFun(commentModel);
 /// Get Specific comment
   exports.getComment = getSpecficFun(commentModel);
-
-

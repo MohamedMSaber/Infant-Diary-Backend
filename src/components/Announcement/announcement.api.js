@@ -4,7 +4,7 @@ const router=require('express').Router();
 
 
 router.route('/:userType').post(ProtectedRoutes,AllowedTo(['admin']),addAnnouncement);
-router.route('/').get(getAnnouncements);
+router.route('').get(getAnnouncements);
 router.route('/:id').get(getAnnouncementByID).put(updateAnnouncement).delete(deleteAnnouncement);
 
 
