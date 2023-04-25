@@ -4,7 +4,7 @@ const router=require('express').Router();
 
 
 router.route('/:userType').post(ProtectedRoutes,AllowedTo(['admin']),addFAQ);
-router.route('/').get(getQuestions);
+router.route('').get(getQuestions);
 router.route('/:id').get(getQuestion).put(updateFAQ).delete(deleteQuestion);
 
 
