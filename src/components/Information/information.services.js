@@ -15,8 +15,13 @@ exports.createInformation = catchAsyncErrors(async (req, res) => {
 
 exports.getInformations = catchAsyncErrors(async (req, res) => {
   let apiFeatures = new ApiFeatures(informationModel.find(), req.query).paginate().fields().filter().sort()
-  Products = await apiFeatures.mongooseQuery
-  res.status(200).json({ page: apiFeatures.page, Products });
+
+  if (req.query.keyword) {
+    let word = req.query.keyword
+    apiFeatures.mongooseQuery.find({ $or: [{ topic: { $regex: word, $options: 'i' } }, { body: { $regex: word, $options: 'i' } },{ type: { $regex: word, $options: 'i' } },{ link: { $regex: word, $options: 'i' } },{ videoLink: { $regex: word, $options: 'i' } }] })
+  }
+  info = await apiFeatures.mongooseQuery
+  res.status(200).json({ page: apiFeatures.page, info });
 });
 
 /// update information
