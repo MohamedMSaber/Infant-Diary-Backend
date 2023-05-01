@@ -5,9 +5,10 @@ const morgan = require('morgan');
 const cors= require('cors');
 
 const app = express()
-const port = process.env.PORT || 4000
+const port = process.env.PORT
 app.use(express.json());
-app.use(cors());
+app.use(express.urlencoded({extended:false}))
+app.use(cors({}));
 const indexRouter = require('./src/index.router')
 const globalMiddleware = require("./src/utils/GolbalMiddleware");
 const AppError = require('./src/utils/AppError');
