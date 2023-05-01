@@ -7,7 +7,6 @@ const cors= require('cors');
 const app = express()
 const port = process.env.PORT
 app.use(express.json());
-app.use(express.urlencoded({extended:false}))
 app.use(cors({}));
 const indexRouter = require('./src/index.router')
 const globalMiddleware = require("./src/utils/GolbalMiddleware");
