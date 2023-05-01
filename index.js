@@ -17,9 +17,7 @@ if (process.env.MODE_ENV === 'devolpment') {
     app.use(morgan('dev'));
 }
 
-app.get("/home",(req,res)=>{
-    res.json({message:"Hello, world!"});
-})
+
 app.use("/api/v1" , indexRouter.authRouter)
 app.use("/api/v1/parent", indexRouter.parentRouter)
 app.use("/api/v1/admin", indexRouter.adminRouter)
