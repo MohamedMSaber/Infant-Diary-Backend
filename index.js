@@ -12,10 +12,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }))
 app.use(cors({}));
 
-if (process.env.MODE_ENV === 'devolpment') {
-    app.use(morgan('dev'));
-}else {
-    app.use(morgan("production"))
+if (process.env.MOOD === 'DEV') {
+    app.use(morgan("dev"))
+} else {
+    app.use(morgan("combined"))
 }
 
 
