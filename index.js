@@ -3,18 +3,22 @@ const dbConnection = require('./src/database/dbConnection')
 require('dotenv').config({path:'./config/.env'})
 const morgan = require('morgan');
 const cors= require('cors');
-
-const app = express()
-const port = process.env.PORT || 3000
-app.use(express.json());
-// app.use(cors({}));
 const indexRouter = require('./src/index.router')
 const globalMiddleware = require("./src/utils/GolbalMiddleware");
 const AppError = require('./src/utils/AppError');
+const app = express()
+const port = process.env.PORT
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }))
+app.use(cors({}));
 
 if (process.env.MODE_ENV === 'devolpment') {
     app.use(morgan('dev'));
+}else {
+    app.use(morgan("production"))
 }
+
+
 
 
 app.use("/api/v1" , indexRouter.authRouter)
