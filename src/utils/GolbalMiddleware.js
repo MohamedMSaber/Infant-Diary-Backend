@@ -9,11 +9,11 @@ module.exports = (err,req,res,next)=>{
 }
 
 let devMode = (err,res)=>{
-        res.status(err.statusCode || 500).json({status: err.statusCode , message: err.message , stack: err.stack});
+        res.status(err.statusCode).json({status: err.statusCode , message: err.message , stack: err.stack});
         
 }
    
 
 let proMode = (err,res)=>{
-        res.status(err.statusCode || 500).json({status: err.statusCode , message: err.message });
+        res.status(err.statusCode).json({status: err.statusCode , message: err.message });
 }
