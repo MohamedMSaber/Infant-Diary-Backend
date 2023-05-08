@@ -36,7 +36,7 @@ const signup = catchAsyncErrors(async(req , res , next)=>{
             let newDoctor = new newModel(req.body);
             await newDoctor.save();
             const html = `<h1>We will review your profile and contact you SOON😊...</h1>`;
-            sendEmail(newUser.email , html )
+            sendEmail(newDoctor.email , html )
             res.status(200).json({ Doctor:newDoctor , message :  "Sign Up Successful...'\n'We will review your profile and contact you SOON😊..." });
             console.log(newDoctor)
         }
