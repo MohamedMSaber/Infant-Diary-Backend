@@ -35,6 +35,7 @@ const signup = catchAsyncErrors(async(req , res , next)=>{
             req.body.nationalIdPhoto =  image.secure_url;
             let newDoctor = new newModel(req.body);
             await newDoctor.save();
+            const html = `<h1>We will review your profile and contact you SOON😊...</h1>`;
             res.status(200).json({ Doctor:newDoctor , message :  "Sign Up Successful...'\n'We will review your profile and contact you SOON😊..." });
             console.log(newDoctor)
         }
