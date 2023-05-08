@@ -12,13 +12,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }))
 app.use(cors({}));
 
-if (process.env.MOOD === 'DEV') {
-    app.use(morgan("dev"))
-} else {
-    app.use(morgan("combined"))
+if (process.env.MODE_ENV === 'devolpment') {
+    app.use(morgan('dev'));
 }
-
-
 
 
 app.use("/api/v1" , indexRouter.authRouter)
