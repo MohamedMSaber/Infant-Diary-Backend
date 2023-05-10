@@ -30,6 +30,7 @@ app.use("/api/v1/information", indexRouter.informationRouter)
 app.use("/api/v1/service", indexRouter.serviceRouter)
 app.use("/api/v1/standard", indexRouter.standardRouter)
 app.use("/api/v1/vaccine", indexRouter.vaccineRouter)
+app.use("/api/v1/child", indexRouter.childRouter)
 
 app.all('*', (req, res,next) =>{
     next(new AppError(`Route : ${req.originalUrl} not found on Server`, 404));

@@ -1,8 +1,8 @@
 // const jwt= require("jsonwebtoken")
 // const bcrypt= require("bcryptjs")
 
-const { catchAsyncErrors } = require("../../../utils/catchAsync");
-const childModel = require("../../Child/child.model");
+// const { catchAsyncErrors } = require("../../../utils/catchAsync");
+// const childModel = require("../../Child/child.model");
 
 // const { sendEmail } = require("../../utils/email");
 // const ParentModel = require("./parent.model");
@@ -159,10 +159,5 @@ const childModel = require("../../Child/child.model");
 //      }
 //    }
 
-exports.addChild = catchAsyncErrors(async (req, res) => {
-    const {name,birthDate,gender,weight,headDiameter,height}= req.body;
-    let child = new childModel(req.body);
-    await child.save();
-    res.status(200).json({child,message:"You have been added your child Successfully..."});
-  });
+
   
