@@ -127,7 +127,7 @@ const ProtectedRoutes = catchAsyncErrors(async(req,res,next)=>{
     let decodedToken = await jwt.verify(token, process.env.JWT_KEY)
     // 3. check if token user Id is already exist
     user = await newModel.findById(decodedToken.userId);
-    console.log(user);
+    
     if (!user) {
         return next(new AppError("User Not Exists" , 401))
     }
@@ -140,7 +140,8 @@ const ProtectedRoutes = catchAsyncErrors(async(req,res,next)=>{
 const AllowedTo = (...roles)=>{
     return catchAsyncErrors(async(req,res,next)=>{
         if(!roles.includes(req.user.role)){
-            return next(new AppError("You not Authorized to Access This Route" , 401))
+            console.log(roles);
+            return next(new AppError("You not Authorized to Access This Route" ), 401)
         }
         next();
     })
