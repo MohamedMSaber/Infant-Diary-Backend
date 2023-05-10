@@ -3,7 +3,6 @@ const { updateFun, deleteFun, getAllFun, getSpecficFun } = require("../Handlers/
 const childModel = require("./child.model");
 
 exports.addChild = catchAsyncErrors(async (req, res) => {
-    const {name,birthDate,gender,weight,headDiameter,height}= req.body;
     let child = new childModel(req.body);
     await child.save();
     res.status(200).json({child,message:"You have been added your child Successfully..."});
