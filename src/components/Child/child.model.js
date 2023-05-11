@@ -2,7 +2,6 @@ const { Schema, model,Types} = require("mongoose");
 const bcrypt = require('bcrypt');
 
 const schema = Schema({
-    
     name: { type: String, required: [true, 'name is required']},
     birthDate: { type: String, required: [true, 'birthDate is required']},
     gender: { type: String, required: [true, 'gender is required'], enum: ['Male', 'Female'],},

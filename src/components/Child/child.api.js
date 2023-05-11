@@ -3,8 +3,8 @@ const { addChild, updateChild, deleteChild, getChildren, getChild } = require(".
 const router=require('express').Router();
 
 
-router.route('/:userType').post(ProtectedRoutes,AllowedTo('parent'),addChild);
-router.route('/').get(getChildren);
-router.route('/:id').put(updateChild).get(getChild).delete(deleteChild);
+router.route('/').post(ProtectedRoutes,AllowedTo('parent'),addChild);
+router.route('/').get(ProtectedRoutes, AllowedTo('parent'),getChildren);
+router.route('/:id').put(ProtectedRoutes, AllowedTo('parent'),updateChild).get(getChild).delete(ProtectedRoutes, AllowedTo('parent'),deleteChild);
 
 module.exports= router

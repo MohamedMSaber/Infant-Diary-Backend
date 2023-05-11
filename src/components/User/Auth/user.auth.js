@@ -97,37 +97,37 @@ const signIn = catchAsyncErrors(async (req, res, next) => {
     else if (!user.isAccpeted && userType ==='doctor'){
         return next(new AppError(`Your Email Under Reviewing we will Contact You SOON...`, 400));
     }
-    let token = jwt.sign({ name : user.name , userId : user._id }, process.env.JWT_KEY);
+    let token = jwt.sign({ name : user.name , userId : user._id , type: userType }, process.env.JWT_KEY);
     res.status(200).json({ token})
 })
 
-// Authentication
+// Authentication  
 const ProtectedRoutes = catchAsyncErrors(async(req,res,next)=>{
-    let {userType} = req.params;
+
     let newModel;
-    let user;
-    if (userType !== 'parent' && userType !== 'doctor' && userType !== 'admin') {
-        return next(new AppError("Invalid user type"));
-    }
-    else {
-        if (userType === 'parent') {
-            newModel = parentModel;
-        }
-        else if(userType === 'doctor'){
-            newModel = doctorModel;
-        }
-        else if(userType === 'admin'){
-            newModel = adminModel;
-        }
-    }
     //1. check if token Provieded
     let token = req.headers.token;
+    
     if(!token) return next(new AppError('Token is required' , 401))    
     // 2. check if token is valid
     let decodedToken = await jwt.verify(token, process.env.JWT_KEY)
-    // 3. check if token user Id is already exist
-    user = await newModel.findById(decodedToken.userId);
     
+    if (decodedToken.type !== 'parent' && decodedToken.type !== 'doctor' && decodedToken.type !== 'admin') {
+        return next(new AppError("Invalid user type"));
+    }
+    else {
+        if (decodedToken.type === 'parent') {
+            newModel = parentModel;
+        }
+        else if(decodedToken.type === 'doctor'){
+            newModel = doctorModel;
+        }
+        else if(decodedToken.type === 'admin'){
+            newModel = adminModel;
+        }
+    }
+    // 3. check if token user Id is already exist
+    let user = await newModel.findById(decodedToken.userId);
     if (!user) {
         return next(new AppError("User Not Exists" , 401))
     }
