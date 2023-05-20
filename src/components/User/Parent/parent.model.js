@@ -12,8 +12,17 @@ const schema = Schema({
     isBlocked: { type: Boolean, default: false },
     emailConfirm: { type: Boolean, default: false},
     role:{type: String, default:'parent'},
-},{ timestamps: true })
+},{ timestamps: true, toJSON: { virtuals: true }, toObject:{ virtuals: true } });
 
+schema.virtual('childerns',{
+    ref:'child',
+    localField: '_id',
+    foreignField: 'parentID'
+});
+
+schema.pre(/^find/, function () {
+    this.populate('childerns' , '')
+})
 
 schema.pre('save', async function () { 
     this.password = await bcrypt.hash(this.password, parseInt(process.env.saltRound))

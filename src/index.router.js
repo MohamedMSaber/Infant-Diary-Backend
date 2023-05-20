@@ -30,6 +30,5 @@ module.exports={
     informationRouter,
     serviceRouter,
     standardRouter,
-    vaccineRouter
-    
+    vaccineRouter,
 }

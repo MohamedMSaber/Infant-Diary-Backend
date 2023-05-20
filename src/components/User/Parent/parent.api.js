@@ -1,18 +1,9 @@
-const {  confirmEmail, signIn } = require('../Auth/user.auth');
-
-// const{signup} = require('../user.auth')
-
+const { ProtectedRoutes, AllowedTo } = require("../Auth/user.auth");
+const { getUser } = require("./parent.services");
 const router=require('express').Router();
 
-// router.post("/:userType/signup",signup)
-// router.get("/:userType/confirmEmail/:id",confirmEmail)
-router.post("/signIn",signIn)
-// router.get("/refreshEmail/:id",refreshEmail)
+
+router.route('/').get(ProtectedRoutes, AllowedTo('parent'),getUser);
 
 
-
-
-// router.post("/sendCode",sendCode)
-// router.post("/forgetPassword",forgetPassword)
-
-module.exports=router
+module.exports=router;
