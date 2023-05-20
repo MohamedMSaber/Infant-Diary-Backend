@@ -12,7 +12,6 @@ const schema = Schema({
     isBlocked: { type: Boolean, default: false },
     emailConfirm: { type: Boolean, default: false},
     role:{type: String, default:'parent'},
-    children:[{type: Types.ObjectId,ref:"child"}]
 },{ timestamps: true })
 
 
