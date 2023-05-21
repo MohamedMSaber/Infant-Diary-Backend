@@ -6,6 +6,7 @@ const cors= require('cors');
 const indexRouter = require('./src/index.router')
 const globalMiddleware = require("./src/utils/GolbalMiddleware");
 const AppError = require('./src/utils/AppError');
+const sendVaccineReminder = require('./src/utils/vaccineReminder');
 const app = express()
 const port = process.env.PORT || 3000;
 app.use(express.json());
@@ -36,6 +37,7 @@ app.all('*', (req, res,next) =>{
     next(new AppError(`Route : ${req.originalUrl} not found on Server`, 404));
 })
 
+sendVaccineReminder();
 //global errorHandler middleware
 app.use(globalMiddleware)
 dbConnection();
