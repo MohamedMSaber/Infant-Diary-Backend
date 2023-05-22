@@ -30,7 +30,6 @@ const signup = catchAsyncErrors(async(req , res , next)=>{
     user =  await newModel.findOne({ email: req.body.email });
     if (!user) {
         if (userType == 'doctor'){
-            console.log(req.file);
             const image =await  cloudinary.uploader.upload(req.file.path , {folder: "DoctorsNationalIDs"})
             req.body.nationalIdPhoto =  image.secure_url;
             let newDoctor = new newModel(req.body);
@@ -38,7 +37,6 @@ const signup = catchAsyncErrors(async(req , res , next)=>{
             const html = `<h1>We will review your profile and contact you SOON😊...</h1>`;
             sendEmail(newDoctor.email , html )
             res.status(200).json({ Doctor:newDoctor , message :  "Sign Up Successful...'\n'We will review your profile and contact you SOON😊..." });
-            console.log(newDoctor)
         }
         else if (userType === 'parent') {
             let newUser = new newModel(req.body);
@@ -51,7 +49,7 @@ const signup = catchAsyncErrors(async(req , res , next)=>{
             let newHospital = new newModel(req.body);
             await newHospital.save();
             res.status(200).json({ Hospital:newHospital , message :  "Sign Up Successful...'\n'We will review your profile and contact you SOON😊..." });
-            console.log(newHospital)
+            
         }
 
     }

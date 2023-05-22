@@ -30,7 +30,7 @@ async function vaccineReminder() {
 
 
 const sendVaccineReminder =()=>{
-    cron.schedule('* 20 * * * *', async () => {
+    cron.schedule('0 20 * * *', async () => {
         console.log('Sending vaccine Reminders...');
         await vaccineReminder();
       });
