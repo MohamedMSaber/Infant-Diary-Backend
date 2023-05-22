@@ -32,6 +32,7 @@ app.use("/api/v1/service", indexRouter.serviceRouter)
 app.use("/api/v1/standard", indexRouter.standardRouter)
 app.use("/api/v1/vaccine", indexRouter.vaccineRouter)
 app.use("/api/v1/child", indexRouter.childRouter)
+app.use("/api/v1/doctor", indexRouter.doctorRouter)
 
 app.all('*', (req, res,next) =>{
     next(new AppError(`Route : ${req.originalUrl} not found on Server`, 404));
@@ -40,5 +41,6 @@ app.all('*', (req, res,next) =>{
 sendVaccineReminder();
 //global errorHandler middleware
 app.use(globalMiddleware)
+
 dbConnection();
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))

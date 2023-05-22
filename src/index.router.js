@@ -12,6 +12,7 @@ const serviceRouter = require("./components/Service/service.api")
 const standardRouter = require("./components/Standard/standard.api")
 const vaccineRouter = require("./components/Vaccine/vaccine.api")
 const childRouter = require("./components/Child/child.api")
+const doctorRouter = require("./components/User/Doctor/doctor.api")
 
 
 
@@ -31,4 +32,5 @@ module.exports={
     serviceRouter,
     standardRouter,
     vaccineRouter,
+    doctorRouter
 }

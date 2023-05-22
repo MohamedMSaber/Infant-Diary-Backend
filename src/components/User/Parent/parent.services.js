@@ -6,3 +6,5 @@ exports.getUser = catchAsyncErrors(async (req,res)=>{
     const user = await parentModel.findById(parentID);
     res.status(200).json(user);
 })
+
+

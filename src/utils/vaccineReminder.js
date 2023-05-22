@@ -16,13 +16,10 @@ async function vaccineReminder() {
             const parent = await Parent.findOne({ _id: parentid });
             const parentEmail = parent.email;
             const vaccine = await Vaccine.findOne({age: {$eq: childAgeInMonth}});
-            if (vaccine && !child.vaccines.includes(vaccine._id)) {
+            if (vaccine) {
                 const subject = `Reminder: ${vaccine.name} due for your baby ${child.name}`;   
                 const htmlBody = `<h1>Dear ${parent.name},\n\nThis is a reminder that your baby ${child.name} is due for the ${vaccine.name} vaccine .\n\nBest regards,\nThe Vaccine Reminder Team</h1>`;
                 await sendEmail(parentEmail , htmlBody, subject);
-                child.vaccines.push(vaccine._id);
-                await child.save();
-                
             }
         }
        

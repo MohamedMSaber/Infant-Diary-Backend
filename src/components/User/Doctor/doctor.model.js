@@ -7,7 +7,8 @@ const schema = Schema({
     password: { type: String, required: [true, 'password is required'], minlenght: [6, "password must be at least 6 characters"]},
     age: { type: Number,required: [true, 'age is required'],},
     gender: { type: String, required: [true, 'gender is required'], enum: ['Male', 'Female'],},
-    nationalIdPhoto: {type: String, required:[true, 'National ID Image is Required']},
+    nationalIdPhoto: {type: String},
+    // required:[true, 'National ID Image is Required']
     specialization: { type: String, trim: true, minLenght: 3},
     clinc:[{ type: Types.ObjectId , ref:"clinic" }],
     phone: { type: String},

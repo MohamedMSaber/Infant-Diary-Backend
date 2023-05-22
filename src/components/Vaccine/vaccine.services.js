@@ -15,7 +15,6 @@ exports.createVaccine = catchAsyncErrors(async (req, res) => {
 
 exports.getVaccines = catchAsyncErrors(async (req, res) => {
   let apiFeatures = new ApiFeatures(vaccineModel.find(), req.query).paginate().fields().filter().sort()
-
   if (req.query.keyword) {
     let word = req.query.keyword
     apiFeatures.mongooseQuery.find({ $or: [{ name: { $regex: word, $options: 'i' } }, { compulsory: { $regex: word, $options: 'i' } },{ sideEffects: { $regex: word, $options: 'i' } },{ reason: { $regex: word, $options: 'i' } }] })
