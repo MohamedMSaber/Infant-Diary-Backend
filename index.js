@@ -39,6 +39,7 @@ app.all('*', (req, res,next) =>{
 })
 
 sendVaccineReminder();
+
 //global errorHandler middleware
 app.use(globalMiddleware)
 

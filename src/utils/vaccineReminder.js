@@ -3,8 +3,7 @@ const Child = require('../components/Child/child.model');
 const Vaccine = require('../components/Vaccine/vaccine.model');
 const getAge = require('./getAge');
 const sendEmail = require('./sendEmail');
-const cron = require('node-cron');
-
+const schedule = require('node-schedule');
 
 async function vaccineReminder() {
     const children = await Child.find();
@@ -29,12 +28,13 @@ async function vaccineReminder() {
 }
 
 
-const sendVaccineReminder =()=>{
-    cron.schedule('0 20 * * *', async () => {
-        console.log('Sending vaccine Reminders...');
-        await vaccineReminder();
-      });
-}
+const sendVaccineReminder = () => {
+    schedule.scheduleJob('0 19 * * *', async () => {
+      console.log('Sending vaccine Reminders...');
+      await vaccineReminder();
+    });
+  };
+  
 
 module.exports = sendVaccineReminder;
 
