@@ -6,8 +6,9 @@ const router=require('express').Router();
 
 router.route('/').post(ProtectedRoutes,AllowedTo('parent'),uploadingSingleFile('childPic'),addChild);
 router.route('/').get(ProtectedRoutes, AllowedTo('admin'),getChildren);
-router.route('/:childID').get(ProtectedRoutes, AllowedTo('parent'),uploadingSingleFile('childPic'),childUpComingVaccines)
-                         .put(ProtectedRoutes, AllowedTo('parent'),updateChild).get(ProtectedRoutes, AllowedTo('parent'),getChild)
+router.route('/:childID').get(ProtectedRoutes, AllowedTo('parent'),getChild)
+                         .put(ProtectedRoutes, AllowedTo('parent'),uploadingSingleFile('childPic'),updateChild)
+                         .get(ProtectedRoutes, AllowedTo('parent'),getChild)
                          .delete(ProtectedRoutes, AllowedTo('parent'),deleteChild);
                          
 router.route('/:childID/:vaccineID').put(ProtectedRoutes, AllowedTo('parent'),takeVaccine);
