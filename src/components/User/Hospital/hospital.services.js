@@ -1,6 +1,6 @@
-const { catchAsyncErrors } = require("../../utils/catchAsync");
-const { updateFun, deleteFun, getAllFun, getSpecficFun } = require("../Handlers/handler.factory");
-const ApiFeatures = require("../../utils/ApiFeatures")
+const { catchAsyncErrors } = require("../../../utils/catchAsync");
+const { updateFun, deleteFun, getAllFun, getSpecficFun } = require("../../Handlers/handler.factory");
+const ApiFeatures = require("../../../utils/ApiFeatures")
 const hospitalModel = require("./hospital.model");
 
 

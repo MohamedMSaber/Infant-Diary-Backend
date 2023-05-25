@@ -1,4 +1,4 @@
-const { ProtectedRoutes, AllowedTo } = require('../User/Auth/user.auth');
+const { ProtectedRoutes, AllowedTo } = require('../Auth/user.auth');
 const { getHospital, getHospitals, updateHospital, deleteHospital } = require('./hospital.services');
 const router=require('express').Router();
 

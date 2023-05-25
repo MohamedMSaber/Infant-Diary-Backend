@@ -8,9 +8,10 @@ const schema = Schema({
     weight: { type: Number, required: [true, 'weight is required']},
     headDiameter: { type: Number, required: [true, 'headDiameter is required']},
     height: { type: Number, required: [true, 'height is required']},
-    profilePic: { type: String},
+    childPic: { type: String},
     parentID:{type: Types.ObjectId,ref:"parent"},
     vaccines:[{type: Types.ObjectId,ref:"vaccine"}],
+    takenVaccines:[{type: Types.ObjectId,ref:"vaccine"}]
 },{ timestamps: true })
 
 

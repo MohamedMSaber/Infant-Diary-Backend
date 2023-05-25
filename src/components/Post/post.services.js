@@ -3,17 +3,20 @@ const { updateFun, deleteFun, getAllFun, getSpecficFun } = require("../Handlers/
 const ApiFeatures = require("../../utils/ApiFeatures")
 const postModel = require("./post.model");
 const cloudinary = require('../../utils/cloudinary');
+const commentModel = require("../Comment/comment.model");
 
 
 
 // Create Post
 exports.createPost = catchAsyncErrors(async (req, res) => {
+  if (req.file && req.file.path) {
     const image =await  cloudinary.uploader.upload(req.file.path , {folder: "Posts"})
     req.body.image =  image.secure_url;
-    req.body.createdBy = req.user._id;
-    let newPost = new postModel(req.body);
-    await newPost.save();
-    res.status(200).json({newPost,message:"You have been created post Successfully..."});
+  }
+  req.body.createdBy = req.user._id;
+  let newPost = new postModel(req.body);
+  await newPost.save();
+  res.status(200).json({newPost,message:"You have been created post Successfully..."});
 });
 
 // get All Posts
@@ -32,21 +35,22 @@ exports.getPosts = catchAsyncErrors(async (req, res) => {
 exports.updatePost = catchAsyncErrors(async (req, res)=>{
   const {postID} = req.params;
   const post = await postModel.findById(postID);
-  const image =await  cloudinary.uploader.upload(req.file.path , {folder: "Posts"})
-  req.body.image =  image.secure_url;
-  // Delete the old image if it exists
-  if (post.image) {
-  const public_id = post.image.split("/").pop().split(".")[0];
-  console.log(public_id);
-  await cloudinary.uploader.destroy(`Posts/${public_id}`);
-  }
   const parentId = req.user._id;
   if(post.createdBy.equals(parentId)){
-    let document = await postModel.findByIdAndUpdate(postID, req.body,{new:true} );
-    if (!document) {
+    if (req.file && req.file.path){
+      // Delete the old image if it exists
+      if (post.image) {
+        const public_id = post.image.split("/").pop().split(".")[0];
+        await cloudinary.uploader.destroy(`Posts/${public_id}`);
+      }  
+      const image =await  cloudinary.uploader.upload(req.file.path , {folder: "Posts"})
+      req.body.image =  image.secure_url;
+    }
+    let updatedPost = await postModel.findByIdAndUpdate(postID, req.body,{new:true} );
+    if (!updatedPost) {
         return next(new AppError(`post Not Found To Update`, 404));
     }
-    res.status(200).json({ message: `post has Been Updated`  , document});
+    res.status(200).json({ message: `post has Been Updated`  , updatedPost});
   }
   else {
     res.status(404).json({message: "You do not have permission to update this post."});
@@ -62,11 +66,11 @@ exports.deletePost = catchAsyncErrors(async (req, res)=>{
     // Delete the old image if it exists
     if (post.image) {
       const public_id = post.image.split("/").pop().split(".")[0];
-      console.log(public_id);
       await cloudinary.uploader.destroy(`Posts/${public_id}`);
     }
-    let document = await postModel.findByIdAndDelete(postID);
-    if (!document) {
+    let deletedPost = await postModel.findByIdAndDelete(postID);
+    await commentModel.deleteMany({postID: postID})
+    if (!deletedPost) {
         return next(new AppError(`post Not Found To delete`, 404));
     }
     res.status(200).json({ message: `post has Been deleted`});

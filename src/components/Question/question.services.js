@@ -1,5 +1,5 @@
 const { catchAsyncErrors } = require("../../utils/catchAsync");
-const { updateFun, getAllFun, getSpecficFun, deleteFun } = require("../Handlers/handler.factory");
+const { updateFun, getSpecficFun, deleteFun } = require("../Handlers/handler.factory");
 const ApiFeatures = require("../../utils/ApiFeatures")
 const questionModel = require("./question.model");
 
