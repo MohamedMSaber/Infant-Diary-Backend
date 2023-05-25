@@ -1,7 +1,5 @@
 const { Schema, model,Types} = require("mongoose");
-const bcrypt = require('bcrypt');
-const vaccineModel = require("../Vaccine/vaccine.model");
-const getAge = require("../../utils/getAge");
+
 
 const schema = Schema({
     name: { type: String, required: [true, 'name is required']},

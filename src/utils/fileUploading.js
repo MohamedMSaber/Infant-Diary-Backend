@@ -1,7 +1,7 @@
 const multer = require('multer');
 const AppError = require('./AppError');
 
-let options = (folderName)=>{
+let options = ()=>{
     const storage = multer.diskStorage({})
     function fileFilter(req, file, cb) {
         if (file.mimetype.startsWith('image')) {
@@ -15,5 +15,5 @@ let options = (folderName)=>{
     return upload;
 }
 
-exports.uploadingSingleFile=(filedName , folderName) => options(folderName).single(filedName);
+exports.uploadingSingleFile=(filedName) => options().single(filedName);
 exports.uploadingMultiFile = (fildesArray, folderName) => options(folderName).fields(fildesArray);

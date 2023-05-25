@@ -1,10 +1,13 @@
+const { uploadingSingleFile } = require('../../utils/fileUploading');
 const { ProtectedRoutes, AllowedTo } = require('../User/Auth/user.auth');
-const { createPost, getPosts, getPost, editPost, deletePost } = require('./post.services');
+const { createPost, getPosts, getPost, deletePost, updatePost } = require('./post.services');
 const router=require('express').Router();
 
 
-router.route('').post(ProtectedRoutes,AllowedTo('admin'),createPost);
-router.route('').get(getPosts);
-router.route('/:id').get(getPost).put(editPost).delete(deletePost);
+router.route('/').post(ProtectedRoutes,AllowedTo('admin' , 'parent' , 'hospital'),uploadingSingleFile('image'),createPost);
+router.route('/').get(ProtectedRoutes,AllowedTo('admin' , 'parent' , 'hospital'),getPosts);
+router.route('/:postID').get(ProtectedRoutes,AllowedTo('admin' , 'parent' , 'hospital'),getPost)
+                        .put(ProtectedRoutes,AllowedTo('admin' , 'parent' , 'hospital'),uploadingSingleFile('image'),updatePost)
+                        .delete(ProtectedRoutes,AllowedTo('admin' , 'parent' , 'hospital'),deletePost);
 
 module.exports= router

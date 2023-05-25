@@ -30,7 +30,7 @@ const signup = catchAsyncErrors(async(req , res , next)=>{
     user =  await newModel.findOne({ email: req.body.email });
     if (!user) {
         if (userType == 'doctor'){
-            const image =await  cloudinary.uploader.upload(req.file.path , {folder: "DoctorsNationalIDs"})
+            const image =await cloudinary.uploader.upload(req.file.path , {folder: "DoctorsNationalIDs"})
             req.body.nationalIdPhoto =  image.secure_url;
             let newDoctor = new newModel(req.body);
             await newDoctor.save();

@@ -1,10 +1,10 @@
 const { ProtectedRoutes, AllowedTo } = require('../User/Auth/user.auth');
-const { getComments, getComment, editComment, deleteComment, addComment } = require('./comment.services');
+const { getComment, addComment, addReply } = require('./comment.services');
 const router=require('express').Router();
 
 
-router.route('/:userType').post(ProtectedRoutes,AllowedTo(['admin']),addComment);
-router.route('').get(getComments);
-router.route('/:id').get(getComment).put(editComment).delete(deleteComment);
+
+router.route('/:postID').post(ProtectedRoutes,AllowedTo('parent' , 'doctor'),addComment).get(getComment);
+router.route('/reply/:commentID').post(ProtectedRoutes,AllowedTo('parent' , 'doctor'),addReply)
 
 module.exports= router
