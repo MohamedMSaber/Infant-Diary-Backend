@@ -29,7 +29,7 @@ async function vaccineReminder() {
 
 
 const sendVaccineReminder = () => {
-    schedule.scheduleJob('0 19 * * *', async () => {
+    schedule.scheduleJob('0 17 * * *', async () => {
       console.log('Sending vaccine Reminders...');
       await vaccineReminder();
     });
