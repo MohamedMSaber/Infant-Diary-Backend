@@ -7,18 +7,37 @@ const schema = Schema({
     password: { type: String, required: [true, 'password is required'], minlenght: [6, "password must be at least 6 characters"]},
     age: { type: Number,required: [true, 'age is required'],},
     gender: { type: String, required: [true, 'gender is required'], enum: ['Male', 'Female'],},
-    nationalIdPhoto: {type: String},
-    // required:[true, 'National ID Image is Required']
+    verficationImage: {type: String, required: [true, 'verficationImage is required']},
     specialization: { type: String, trim: true, minLenght: 3},
-    clinc:[{ type: Types.ObjectId , ref:"clinic" }],
     phone: { type: String},
     isBlocked: { type: Boolean, default: false },
     isAccpeted:{type: Boolean, default: false},
-    role:{type: String, default:'doctor'}
-},{ timestamps: true })
+    role:{type: String, default:'doctor'},
+    ratings: [
+        {
+          rating: { type: Number, required: true, min: 0, max: 5 },
+          user: { type: Types.ObjectId, ref: 'user', required: true },
+          date: { type: Date, default: Date.now }
+        }
+    ],
+    ratingAverage: {type: Number}
+},{ timestamps: true, toJSON: { virtuals: true }, toObject:{ virtuals: true } })
+
+schema.virtual('clinics',{
+    ref:'clinic',
+    localField: '_id',
+    foreignField: 'doctorID'
+});
+
+schema.pre(/^find/, function () {
+    this.populate('clinics' , '')
+})
 
 schema.pre('save', async function () { 
-    this.password = await bcrypt.hash(this.password, parseInt(process.env.saltRound))
+    // Check if the document is new (sign-up process)
+    if (this.isNew) {
+        this.password = await bcrypt.hash(this.password, parseInt(process.env.saltRound));
+    }
 })
 
 

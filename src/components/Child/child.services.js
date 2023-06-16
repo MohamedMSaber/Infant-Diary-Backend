@@ -75,7 +75,7 @@ exports.deleteChild = catchAsyncErrors(async (req, res)=>{
   if(child.parentID.equals(parentId)){
     // Delete the old image if it exists
     if (child.childPic) {
-      const public_id = post.image.split("/").pop().split(".")[0];
+      const public_id = child.childPic.split("/").pop().split(".")[0];
       await cloudinary.uploader.destroy(`children/${public_id}`);
     }
     let document = await childModel.findByIdAndDelete(childID);

@@ -11,7 +11,7 @@ const schema = Schema({
     address: { type: String},
     isBlocked: { type: Boolean, default: false },
     emailConfirm: { type: Boolean, default: false},
-    role:{type: String, default:'parent'},
+    role:{type: String, default:'parent'}
 },{ timestamps: true, toJSON: { virtuals: true }, toObject:{ virtuals: true } });
 
 schema.virtual('childerns',{
@@ -25,7 +25,10 @@ schema.pre(/^find/, function () {
 })
 
 schema.pre('save', async function () { 
-    this.password = await bcrypt.hash(this.password, parseInt(process.env.saltRound))
+    // Check if the document is new (sign-up process)
+    if (this.isNew) {
+        this.password = await bcrypt.hash(this.password, parseInt(process.env.saltRound));
+    }
 })
 
 schema.pre('findOneAndUpdate', async function (next) {

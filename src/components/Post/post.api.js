@@ -4,10 +4,10 @@ const { createPost, getPosts, getPost, deletePost, updatePost } = require('./pos
 const router=require('express').Router();
 
 
-router.route('/').post(ProtectedRoutes,AllowedTo('admin' , 'parent' , 'hospital'),uploadingSingleFile('image'),createPost);
-router.route('/').get(ProtectedRoutes,AllowedTo('admin' , 'parent' , 'hospital'),getPosts);
-router.route('/:postID').get(ProtectedRoutes,AllowedTo('admin' , 'parent' , 'hospital'),getPost)
-                        .put(ProtectedRoutes,AllowedTo('admin' , 'parent' , 'hospital'),uploadingSingleFile('image'),updatePost)
-                        .delete(ProtectedRoutes,AllowedTo('admin' , 'parent' , 'hospital'),deletePost);
+router.route('/').post(ProtectedRoutes,AllowedTo('admin' , 'parent' ,'doctor', 'hospital'),uploadingSingleFile('image'),createPost);
+router.route('/').get(ProtectedRoutes,AllowedTo('admin' , 'parent' ,'doctor', 'hospital'),getPosts);
+router.route('/:postID').get(ProtectedRoutes,AllowedTo('admin' , 'parent' ,'doctor', 'hospital'),getPost)
+                        .put(ProtectedRoutes,AllowedTo('admin' , 'parent' ,'doctor', 'hospital'),uploadingSingleFile('image'),updatePost)
+                        .delete(ProtectedRoutes,AllowedTo('admin' , 'parent' ,'doctor', 'hospital'),deletePost);
 
 module.exports= router

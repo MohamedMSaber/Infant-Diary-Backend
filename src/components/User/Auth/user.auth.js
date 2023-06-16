@@ -14,7 +14,7 @@ const signup = catchAsyncErrors(async(req , res , next)=>{
     let {userType} = req.params;
     let user ;
     let newModel;
-    if (userType !== 'parent' && userType !== 'doctor' && userType !== 'hospital') {
+    if (userType !== 'parent' && userType !== 'doctor' && userType !== 'hospital' && userType !== 'admin') {
         return next(new AppError("Invalid user type"));
     }
     else {
@@ -22,6 +22,8 @@ const signup = catchAsyncErrors(async(req , res , next)=>{
             newModel = parentModel;
         } else if (userType === 'doctor') {
             newModel = doctorModel;
+        }else if (userType === 'admin') {
+            newModel = adminModel;
         }
         else{
             newModel = hospitalModel;
@@ -30,12 +32,12 @@ const signup = catchAsyncErrors(async(req , res , next)=>{
     user =  await newModel.findOne({ email: req.body.email });
     if (!user) {
         if (userType == 'doctor'){
-            const image =await cloudinary.uploader.upload(req.file.path , {folder: "DoctorsNationalIDs"})
-            req.body.nationalIdPhoto =  image.secure_url;
+            const image =await cloudinary.uploader.upload(req.file.path , {folder: "Doctors verfication Image"})
+            req.body.verficationImage =  image.secure_url;
             let newDoctor = new newModel(req.body);
             await newDoctor.save();
             const html = `<h1>We will review your profile and contact you SOON😊...</h1>`;
-            sendEmail(newDoctor.email , html )
+            sendEmail(newDoctor.email , html,'Inafant Diary Registration' )
             res.status(200).json({ Doctor:newDoctor , message :  "Sign Up Successful...'\n'We will review your profile and contact you SOON😊..." });
         }
         else if (userType === 'parent') {
@@ -45,11 +47,19 @@ const signup = catchAsyncErrors(async(req , res , next)=>{
             sendEmail(newUser.email , html )
             res.status(200).json({ Email:newUser.email , message :  "Sign Up Successfully...plz confirm your EMAIL..." });
         }
+        else if (userType === 'admin') {
+            let newUser = new newModel(req.body);
+            await newUser.save();
+            res.status(200).json({ Email:newUser.email , message :  "Sign Up Successfully...." });
+        }
         else{
+            const image =await cloudinary.uploader.upload(req.file.path , {folder: "hospitals Verefication Images"})
+            req.body.verficationImage =  image.secure_url;
             let newHospital = new newModel(req.body);
             await newHospital.save();
+            const html = `<h1>We will review your profile and contact you SOON😊...</h1>`;
+            sendEmail(newHospital.email , html, 'Inafant Diary Registration')
             res.status(200).json({ Hospital:newHospital , message :  "Sign Up Successful...'\n'We will review your profile and contact you SOON😊..." });
-            
         }
 
     }
@@ -72,7 +82,7 @@ const signIn = catchAsyncErrors(async (req, res, next) => {
     let {userType} = req.params;
     let user ;
     let newModel;
-    if (userType !== 'parent' && userType !== 'doctor' && userType !== 'hospital') {
+    if (userType !== 'parent' && userType !== 'doctor' && userType !== 'hospital' && userType !== 'admin') {
         return next(new AppError("Invalid user type"));
     }
     else {
@@ -80,20 +90,25 @@ const signIn = catchAsyncErrors(async (req, res, next) => {
             newModel = parentModel;
         } else if (userType === 'doctor') {
             newModel = doctorModel;
+        } else if (userType === 'admin') {
+            newModel = adminModel;
         }
         else{
             newModel = hospitalModel;
         }
     }
     user = await newModel.findOne({ email: req.body.email });
+    
     if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
         return next(new AppError(`Incorrect Email or Password`, 400));
-    }
-    else if (!user.emailConfirm && userType ==='parent'){
+    }else if (!user.emailConfirm && userType ==='parent'){
         return next(new AppError(`First Confirm Your Email...`, 400));
-    }
-    else if (!user.isAccpeted && userType ==='doctor'){
+    }else if (!user.isAccpeted && userType ==='doctor'){
         return next(new AppError(`Your Email Under Reviewing we will Contact You SOON...`, 400));
+    }else if (!user.isAccpeted && userType ==='hospital'){
+        return next(new AppError(`Your Email Under Reviewing we will Contact You SOON...`, 400));
+    }else if (!user.verified && userType ==='admin'){
+        return next(new AppError(`Your Account is not verified...`, 400));
     }
     let token = jwt.sign({ name : user.name , userId : user._id , type: userType }, process.env.JWT_KEY);
     res.status(200).json({ token})
@@ -109,7 +124,7 @@ const ProtectedRoutes = catchAsyncErrors(async(req,res,next)=>{
     if(!token) return next(new AppError('Token is required' , 401))    
     // 2. check if token is valid
     let decodedToken = await jwt.verify(token, process.env.JWT_KEY)
-    if (decodedToken.type !== 'parent' && decodedToken.type !== 'doctor' && decodedToken.type !== 'admin') {
+    if (decodedToken.type !== 'parent' && decodedToken.type !== 'doctor' && decodedToken.type !== 'admin' && decodedToken.type !== 'hospital') {
         return next(new AppError("Invalid user type"));
     }
     else {
@@ -122,9 +137,13 @@ const ProtectedRoutes = catchAsyncErrors(async(req,res,next)=>{
         else if(decodedToken.type === 'admin'){
             newModel = adminModel;
         }
+        else if(decodedToken.type === 'hospital'){
+            newModel = hospitalModel;
+        }
     }
     // 3. check if token user Id is already exist
     let user = await newModel.findById(decodedToken.userId);
+    
     if (!user) {
         return next(new AppError("User Not Exists" , 401))
     }

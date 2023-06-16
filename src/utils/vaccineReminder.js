@@ -33,7 +33,7 @@ const sendVaccineReminder = () => {
       console.log('Sending vaccine Reminders...');
       await vaccineReminder();
     });
-  };
+};
   
 
 module.exports = sendVaccineReminder;
