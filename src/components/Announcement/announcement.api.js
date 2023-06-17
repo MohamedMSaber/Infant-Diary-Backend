@@ -3,9 +3,12 @@ const { addAnnouncement, updateAnnouncement, deleteAnnouncement, getAnnouncement
 const router=require('express').Router();
 
 
-router.route('/:userType').post(ProtectedRoutes,AllowedTo(['admin']),addAnnouncement);
-router.route('').get(getAnnouncements);
-router.route('/:id').get(getAnnouncementByID).put(updateAnnouncement).delete(deleteAnnouncement);
+router.route('/').post(ProtectedRoutes,AllowedTo('admin'),addAnnouncement)
+                 .get(ProtectedRoutes,AllowedTo('admin' , 'parent' ,'doctor', 'hospital'),getAnnouncements)
+
+router.route('/:id').put(ProtectedRoutes,AllowedTo('admin'),updateAnnouncement)
+                    .delete(ProtectedRoutes,AllowedTo('admin'),deleteAnnouncement)
+                    .get(ProtectedRoutes,AllowedTo('admin' , 'parent' ,'doctor', 'hospital'),getAnnouncementByID)
 
 
 module.exports= router

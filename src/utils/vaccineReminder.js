@@ -21,9 +21,6 @@ async function vaccineReminder() {
                 await sendEmail(parentEmail , htmlBody, subject);
             }
         }
-       
-
-       
     }
 }
 
