@@ -29,7 +29,7 @@ exports.getDoctor = catchAsyncErrors(async (req, res) => {
 //get doctor information for doctor
 exports.getDoctorInfo = catchAsyncErrors(async (req, res) => {
   const doctorID = req.user._id;
-  const doctor = await doctorModel.findById(doctorID);
+  const doctor = await doctorModel.findOne(doctorID);
   res.status(200).json(doctor);
 })
 

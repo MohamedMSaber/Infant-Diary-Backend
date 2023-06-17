@@ -29,7 +29,7 @@ schema.virtual('clinics',{
     foreignField: 'doctorID'
 });
 
-schema.pre(/^find/, function () {
+schema.pre('findOne', function () {
     this.populate('clinics' , '')
 })
 

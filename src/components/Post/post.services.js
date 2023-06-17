@@ -1,5 +1,5 @@
 const { catchAsyncErrors } = require("../../utils/catchAsync");
-const { updateFun, deleteFun, getAllFun, getSpecficFun } = require("../Handlers/handler.factory");
+const { getSpecficFun } = require("../Handlers/handler.factory");
 const ApiFeatures = require("../../utils/ApiFeatures")
 const postModel = require("./post.model");
 const cloudinary = require('../../utils/cloudinary');
@@ -14,6 +14,7 @@ exports.createPost = catchAsyncErrors(async (req, res) => {
     req.body.image =  image.secure_url;
   }
   req.body.createdBy = req.user._id;
+  req.body.createdByModel = req.user.role;
   let newPost = new postModel(req.body);
   await newPost.save();
   res.status(200).json({newPost,message:"You have been created post Successfully..."});
@@ -27,7 +28,12 @@ exports.getPosts = catchAsyncErrors(async (req, res) => {
     let word = req.query.keyword
     apiFeatures.mongooseQuery.find({ $or: [{ body: { $regex: word, $options: 'i' } }] })
   }
+  apiFeatures.mongooseQuery.populate({
+    path: 'createdBy',
+    select: 'name -_id' 
+  });
   posts = await apiFeatures.mongooseQuery
+  
   res.status(200).json({ page: apiFeatures.page, posts });
 });
 
@@ -81,6 +87,14 @@ exports.deletePost = catchAsyncErrors(async (req, res)=>{
 })
 
 // Get Specific Post
-exports.getPost = getSpecficFun(postModel);
+exports.getPost = catchAsyncErrors(async (req, res) => {
+  const {postID} = req.params;
+  const post  = await postModel.findById(postID).populate('createdBy', 'name _id');
+  if (post) {
+    res.status(200).json({post})
+  } else {
+    res.status(404).json({message:'Invalid Post ID'});
+  }
+});
 
 

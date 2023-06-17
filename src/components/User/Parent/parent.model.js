@@ -20,7 +20,7 @@ schema.virtual('childerns',{
     foreignField: 'parentID'
 });
 
-schema.pre(/^find/, function () {
+schema.pre('findOne', function () {
     this.populate('childerns' , '')
 })
 

@@ -15,6 +15,7 @@ exports.addComment = catchAsyncErrors(async (req, res) => {
     req.body.createdBy = req.user._id;
     const {postID} = req.params;
     req.body.postID = postID;
+    req.body.createdByModel = req.user.role;
     let comment = new commentModel (req.body);
     await comment.save();
     const post = await postModel.findById(postID);
