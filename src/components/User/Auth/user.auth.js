@@ -38,13 +38,22 @@ const signup = catchAsyncErrors(async(req , res , next)=>{
             await newDoctor.save();
             const html = `<h1>We will review your profile and contact you SOON😊...</h1>`;
             sendEmail(newDoctor.email , html,'Inafant Diary Registration' )
+            const admins = await adminModel.find();
+            for(const admin of admins) {
+                if (admin.verified) {
+                    let adminEmail = admin.email;
+                    const html = `<h1>New Doctor Registeration with Email ${newDoctor.email}</h1>`;
+                    const subject = `New Doctor Registeration`
+                    sendEmail(adminEmail, html, subject)
+                }
+            }
             res.status(200).json({ Doctor:newDoctor , message :  "Sign Up Successful...'\n'We will review your profile and contact you SOON😊..." });
         }
         else if (userType === 'parent') {
             let newUser = new newModel(req.body);
             await newUser.save();
             const html = `<a href = "${req.protocol}://${req.headers.host}/api/v1/${userType}/confirmEmail/${newUser._id}">Click Here To Confirm Email</a?`;
-            sendEmail(newUser.email , html )
+            sendEmail(newUser.email , html,"Infant Diary Confirmation Email" )
             res.status(200).json({ Email:newUser.email , message :  "Sign Up Successfully...plz confirm your EMAIL..." });
         }
         else if (userType === 'admin') {
@@ -59,6 +68,15 @@ const signup = catchAsyncErrors(async(req , res , next)=>{
             await newHospital.save();
             const html = `<h1>We will review your profile and contact you SOON😊...</h1>`;
             sendEmail(newHospital.email , html, 'Inafant Diary Registration')
+            const admins = await adminModel.find();
+            for(const admin of admins) {
+                if (admin.verified) {
+                    let adminEmail = admin.email;
+                    const html = `<h1>New Hospital Registeration with Email ${newHospital.email}</h1>`;
+                    const subject = `New Hospital Registeration`
+                    sendEmail(adminEmail, html, subject)
+                }
+            }
             res.status(200).json({ Hospital:newHospital , message :  "Sign Up Successful...'\n'We will review your profile and contact you SOON😊..." });
         }
 

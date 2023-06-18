@@ -7,8 +7,7 @@ const  cloudinary  = require("../../../utils/cloudinary");
 
 //get all hospitals and search by hospital name and service name
 exports.getHospitals = catchAsyncErrors(async (req, res) => {
-
-  const hospitals = await hospitalModel.find().populate('services', 'name age');
+  const hospitals = await hospitalModel.find({isAccpeted: true}).populate('services', 'name age');
   const filteredHospitals = [];
   const filteredServices = [];
   // Search for hospitals with the given keyword and if input service name
