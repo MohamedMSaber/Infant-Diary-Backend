@@ -1,5 +1,4 @@
 const { Schema, model} = require("mongoose");
-const bcrypt = require('bcrypt');
 
 const schema = Schema({
     topic:{type:String, required:[true, 'topic is required']}, //feeding-sleeping-playing
