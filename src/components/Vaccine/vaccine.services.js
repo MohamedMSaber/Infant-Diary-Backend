@@ -22,11 +22,9 @@ exports.getVaccines = catchAsyncErrors(async (req, res) => {
   vaccines = await apiFeatures.mongooseQuery
   res.status(200).json({ page: apiFeatures.page, vaccines });
 });
-/// Edit Vaccine
+// Edit Vaccine
 exports.updateVaccine = updateFun(vaccineModel);
-/// Delete Vaccine
-  exports.deleteVaccine = deleteFun(vaccineModel);
-/// Get All Vaccines
-//exports.getVaccines = getAllFun(vaccineModel);
-/// Get Specific Vaccine
-  exports.getVaccine = getSpecficFun(vaccineModel);
+// Delete Vaccine
+exports.deleteVaccine = deleteFun(vaccineModel);
+// Get Specific Vaccine
+exports.getVaccine = getSpecficFun(vaccineModel);

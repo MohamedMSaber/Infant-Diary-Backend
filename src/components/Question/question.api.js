@@ -5,7 +5,6 @@ const router=require('express').Router();
 
 router.route('/').post(ProtectedRoutes,AllowedTo('admin'),addFAQ)
                  .get(ProtectedRoutes,AllowedTo('admin' , 'parent' ,'doctor', 'hospital'),getQuestions);
-
 router.route('/:id').get(ProtectedRoutes,AllowedTo('admin' , 'parent' ,'doctor', 'hospital'),getQuestion)
                     .put(ProtectedRoutes,AllowedTo('admin'),updateFAQ)
                     .delete(ProtectedRoutes,AllowedTo('admin'),deleteQuestion);

@@ -3,8 +3,10 @@ const { createVaccine, getVaccines, getVaccine, updateVaccine, deleteVaccine } =
 const router=require('express').Router();
 
 
-router.route('/').post(ProtectedRoutes,AllowedTo(['admin']),createVaccine);
-router.route('').get(getVaccines);
-router.route('/:id').get(getVaccine).put(updateVaccine).delete(deleteVaccine);
+router.route('/').post(ProtectedRoutes,AllowedTo('admin'),createVaccine)
+                 .get(ProtectedRoutes,AllowedTo('admin' , 'parent' ,'doctor', 'hospital'),getVaccines);
+router.route('/:id').get(ProtectedRoutes,AllowedTo('admin' , 'parent' ,'doctor', 'hospital'),getVaccine)
+                    .put(ProtectedRoutes,AllowedTo('admin'),updateVaccine)
+                    .delete(ProtectedRoutes,AllowedTo('admin'),deleteVaccine);
 
 module.exports= router
