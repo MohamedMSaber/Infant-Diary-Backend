@@ -3,9 +3,12 @@ const { addFAQ, getQuestions, getQuestion, updateFAQ, deleteQuestion } = require
 const router=require('express').Router();
 
 
-router.route('/:userType').post(ProtectedRoutes,AllowedTo(['admin']),addFAQ);
-router.route('').get(getQuestions);
-router.route('/:id').get(getQuestion).put(updateFAQ).delete(deleteQuestion);
+router.route('/').post(ProtectedRoutes,AllowedTo('admin'),addFAQ)
+                 .get(ProtectedRoutes,AllowedTo('admin' , 'parent' ,'doctor', 'hospital'),getQuestions);
+
+router.route('/:id').get(ProtectedRoutes,AllowedTo('admin' , 'parent' ,'doctor', 'hospital'),getQuestion)
+                    .put(ProtectedRoutes,AllowedTo('admin'),updateFAQ)
+                    .delete(ProtectedRoutes,AllowedTo('admin'),deleteQuestion);
 
 
 module.exports= router
