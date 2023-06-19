@@ -23,6 +23,9 @@
   "homepage": "https://github.com/MohamedMSaber/Infant-Diary-Backend#readme",
   "dependencies": {
     "bcrypt": "^5.1.0",
+    "canvas": "^2.11.2",
+    "chart.js": "^3.5.1",
+    "chartjs-node-canvas": "^4.1.6",
     "cloudinary": "^1.36.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",

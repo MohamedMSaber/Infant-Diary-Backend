@@ -3,8 +3,10 @@ const { createStandard, getStandard, updateStandard, deleteStandard,getStandards
 const router=require('express').Router();
 
 //router.route('/:userType').post(ProtectedRoutes,AllowedTo(['admin']),createStandard);
-router.route('/').post(createStandard);
-router.route('/').get(getStandards);
-router.route('/:id').get(getStandard).put(updateStandard).delete(deleteStandard);
+router.route('/').post(ProtectedRoutes,AllowedTo('admin'),createStandard)
+                 .get(ProtectedRoutes,AllowedTo('admin'),getStandards);
+router.route('/:id').get(ProtectedRoutes,AllowedTo('admin'),getStandard)
+                    .put(ProtectedRoutes,AllowedTo('admin'),updateStandard)
+                    .delete(ProtectedRoutes,AllowedTo('admin'),deleteStandard);
 
-module.exports= router
+module.exports= router;

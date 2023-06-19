@@ -1,11 +1,13 @@
-const { default: mongoose, Types } = require("mongoose");
 const { catchAsyncErrors } = require("../../utils/catchAsync");
-const { updateFun, deleteFun, getAllFun, getSpecficFun } = require("../Handlers/handler.factory");
-const parentModel = require("../User/Parent/parent.model");
+const { getAllFun } = require("../Handlers/handler.factory");
 const childModel = require("./child.model");
+const standardModel = require("../Standard/standard.model");
 const getAge = require("../../utils/getAge");
 const vaccineModel = require("../Vaccine/vaccine.model");
 const cloudinary = require("../../utils/cloudinary");
+const Chart = require('chart.js');
+const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
+
 
 // create new baby
 exports.addChild = catchAsyncErrors(async (req, res) => {
@@ -125,3 +127,63 @@ exports.getChild = catchAsyncErrors(async (req, res)=>{
   }
 
 })
+// generate bar Chart Reports
+exports.generateChartReport = catchAsyncErrors(async(req,res)=>{
+    const {childID} = req.params;
+    const child = await childModel.findById(childID);
+    const childAge = getAge(child.birthDate);
+    const childAgeInMonth = (childAge.years * 12) + childAge.months ;
+    const childStandard = await standardModel.findOne({ age: childAgeInMonth });
+    // Generate chart data
+    const chartData = {
+      labels: ['Height', 'Weight', 'Head Diameter'],
+      datasets: [
+        {
+          label: 'Child',
+          backgroundColor: 'rgba(54, 162, 235, 0.5)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1,
+          data: [child.height, child.weight, child.headDiameter],
+        },
+        {
+          label: 'Standard',
+          backgroundColor: 'rgba(255, 99, 132, 0.5)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 1,
+          data: [childStandard.height, childStandard.weight, childStandard.headDiameter],
+        },
+      ],
+    };
+    // Create a bar chart
+    const chartOptions = {
+      responsive: true,
+      scales: {
+        x: {
+          display: true,
+          title: {
+            display: true,
+            text: 'Measurement',
+          },
+        },
+        y: {
+          display: true,
+          title: {
+            display: true,
+            text: 'Value',
+          },
+        },
+      },
+    };
+    // Create the chart configuration
+  const configuration = {
+    type: 'bar',
+    data: chartData,
+    options: chartOptions,
+  };
+  // Create an instance of ChartJSNodeCanvas
+  const chartJSNodeCanvas = new ChartJSNodeCanvas({ width: 400, height: 300 });
+  // Generate the chart image
+  const chartImage = await chartJSNodeCanvas.renderToDataURL(configuration);
+  // Return the chart image in the response
+  res.status(200).json({ chartImage });
+});

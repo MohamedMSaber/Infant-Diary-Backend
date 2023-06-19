@@ -1,6 +1,6 @@
 const { uploadingSingleFile } = require("../../utils/fileUploading");
 const { ProtectedRoutes, AllowedTo } = require("../User/Auth/user.auth");
-const { addChild, updateChild, deleteChild, getChildren, getChild, childUpComingVaccines, takeVaccine } = require("./child.services");
+const { addChild, updateChild, deleteChild, getChildren, getChild, childUpComingVaccines, takeVaccine, generateChartReport } = require("./child.services");
 const router=require('express').Router();
 
 
@@ -10,6 +10,6 @@ router.route('/:childID').get(ProtectedRoutes, AllowedTo('parent'),getChild)
                          .put(ProtectedRoutes, AllowedTo('parent'),uploadingSingleFile('childPic'),updateChild)
                          .get(ProtectedRoutes, AllowedTo('parent'),getChild)
                          .delete(ProtectedRoutes, AllowedTo('parent'),deleteChild);
-                         
+router.route('/:childID/generateReport').get(ProtectedRoutes, AllowedTo('parent'),generateChartReport)                        
 router.route('/:childID/:vaccineID').put(ProtectedRoutes, AllowedTo('parent'),takeVaccine);
 module.exports= router

@@ -5,24 +5,21 @@ const ApiFeatures = require("../../utils/ApiFeatures");
 
 
 
-/// Create Standard
+// Create Standard
 exports.createStandard = catchAsyncErrors(async (req, res) => {
-    const {height,weight,headDiameter,age}= req.body;
     let standard = new standardModel (req.body);
     await standard.save();
     res.status(200).json({standard,message:"You have been created standard Successfully..."});
 });
-
+//get All Standard
 exports.getStandards = catchAsyncErrors(async (req, res) => {
   let apiFeatures = new ApiFeatures(standardModel.find(), req.query).paginate().fields().filter().search().sort()
   Products = await apiFeatures.mongooseQuery
   res.status(200).json({ page: apiFeatures.page, Products });
 });
-/// Edit Standard
+// Edit Standard
 exports.updateStandard = updateFun(standardModel);
-/// Delete Standard
+// Delete Standard
 exports.deleteStandard = deleteFun(standardModel);
-/// Get All Standards
-//exports.getStandards = getAllFun(standardModel);
-/// Get Specific Standard
+// Get Specific Standard
 exports.getStandard = getSpecficFun(standardModel);
