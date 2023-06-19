@@ -7,6 +7,7 @@ const indexRouter = require('./src/index.router')
 const globalMiddleware = require("./src/utils/GolbalMiddleware");
 const AppError = require('./src/utils/AppError');
 const sendVaccineReminder = require('./src/utils/vaccineReminder');
+const sendUpdateData = require('./src/utils/childDataNotification');
 const app = express()
 const port = process.env.PORT || 3000;
 app.use(express.json());
@@ -39,7 +40,7 @@ app.all('*', (req, res,next) =>{
 })
 
 sendVaccineReminder();
-
+sendUpdateData();
 //global errorHandler middleware
 app.use(globalMiddleware)
 

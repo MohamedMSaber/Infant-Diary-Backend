@@ -26,7 +26,6 @@ exports.addChild = catchAsyncErrors(async (req, res) => {
     await child.save();
     res.status(200).json({child,message:"You have been added your child Successfully..."});
 });
-
 // update baby
 exports.updateChild = catchAsyncErrors(async (req, res)=>{
   const {childID} = req.params;
@@ -52,7 +51,7 @@ exports.updateChild = catchAsyncErrors(async (req, res)=>{
     res.status(404).json({message: "You do not have permission to update this children."});
   }
 })
- 
+//mark vaccine as taken
 exports.takeVaccine = catchAsyncErrors(async (req, res)=>{
   const {vaccineID , childID} = req.params;
   const parentID = req.user._id;
@@ -68,7 +67,6 @@ exports.takeVaccine = catchAsyncErrors(async (req, res)=>{
     }
   
 })
-
 // Delete baby
 exports.deleteChild = catchAsyncErrors(async (req, res)=>{
   const {childID} = req.params;
@@ -91,7 +89,7 @@ exports.deleteChild = catchAsyncErrors(async (req, res)=>{
   }
   
 })
-
+//get upcoming children vaccines
 exports.childUpComingVaccines = catchAsyncErrors(async (req, res) => {
   const {childID} = req.params;
   const child = await childModel.findById(childID);
@@ -106,10 +104,8 @@ exports.childUpComingVaccines = catchAsyncErrors(async (req, res) => {
     res.status(404).json({message: "your child has not upComing Vaccines"});
   }
 });
-
 // Get All babies
 exports.getChildren = getAllFun(childModel);
-
 // Get Specific baby
 exports.getChild = catchAsyncErrors(async (req, res)=>{
   const {childID} = req.params;
@@ -133,7 +129,7 @@ exports.generateChartReport = catchAsyncErrors(async(req,res)=>{
     const child = await childModel.findById(childID);
     const childAge = getAge(child.birthDate);
     const childAgeInMonth = (childAge.years * 12) + childAge.months ;
-    const childStandard = await standardModel.findOne({ age: childAgeInMonth });
+    const childStandard = await standardModel.findOne({ age: childAgeInMonth, gender: child.gender  });
     // Generate chart data
     const chartData = {
       labels: ['Height', 'Weight', 'Head Diameter'],
