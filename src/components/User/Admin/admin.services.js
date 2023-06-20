@@ -1,7 +1,10 @@
 const { catchAsyncErrors } = require("../../../utils/catchAsync");
 const doctorModel = require("../Doctor/doctor.model");
 const hospitalModel = require("../Hospital/hospital.model");
-
+const parentModel = require("../Parent/parent.model");
+const chidModel = require("../../Child/child.model");
+const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
+const childModel = require("../../Child/child.model");
 
 //Get Pending Doctors
 exports.getPendingDoctors = catchAsyncErrors(async(req, res)=>{
@@ -42,4 +45,52 @@ exports.AccpetPendingHospitals = catchAsyncErrors(async(req, res)=>{
     }
 });
 //generate bar Chart for users count
+exports.generateUserCountChart = async (req, res) => {
+   // Fetch user counts from the database
+   const parentCount = await parentModel.countDocuments();
+   const hospitalCount = await hospitalModel.countDocuments();
+   const doctorCount = await doctorModel.countDocuments();
+   const childCount = await childModel.countDocuments();
 
+   // Configure the chart data
+   const chartData = {
+    labels: [`Parents (${parentCount})`, `Hospitals (${hospitalCount})`, `Doctors (${doctorCount})`, `Children (${childCount})`],
+     datasets: [
+       {
+         label: 'User Count',
+         backgroundColor: ['blue', 'green', 'red', 'orange'],
+         data: [parentCount, hospitalCount, doctorCount, childCount],
+       },
+     ],
+   };
+
+   // Configure the chart options
+   const chartOptions = {
+     responsive: true,
+     plugins: {
+       legend: {
+         position: 'bottom',
+         labels: {
+           boxWidth: 12,
+           font: {
+             size: 12,
+           },
+         },
+       },
+     },
+   };
+
+   // Create an instance of ChartJSNodeCanvas
+   const chartJSNodeCanvas = new ChartJSNodeCanvas({ width: 400, height: 300 });
+
+   // Generate the chart image
+   const configuration = {
+     type: 'pie',
+     data: chartData,
+     options: chartOptions,
+   };
+   const chartImage = await chartJSNodeCanvas.renderToDataURL(configuration);
+
+   // Return the chart image in the response
+   res.status(200).json({ chartImage });
+}
