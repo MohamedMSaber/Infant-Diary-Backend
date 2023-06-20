@@ -41,4 +41,5 @@ exports.AccpetPendingHospitals = catchAsyncErrors(async(req, res)=>{
         res.status(401).json({message:"Invalid hospital"});
     }
 });
+//generate bar Chart for users count
 

@@ -3,16 +3,14 @@ const { updateFun, deleteFun, getAllFun, getSpecficFun } = require("../Handlers/
 const ApiFeatures = require("../../utils/ApiFeatures");
 const vaccineModel = require("./vaccine.model");
 
-
-
-/// Create Vaccine
+// Create Vaccine
 exports.createVaccine = catchAsyncErrors(async (req, res) => {
     const {name,compulsory,dose,age,sideEffects,reason}= req.body;
     let vaccine = new vaccineModel (req.body);
     await vaccine.save();
     res.status(200).json({vaccine,message:"You have been created vaccine Successfully..."});
 });
-
+//get Vaccine
 exports.getVaccines = catchAsyncErrors(async (req, res) => {
   let apiFeatures = new ApiFeatures(vaccineModel.find(), req.query).paginate().fields().filter().sort()
   if (req.query.keyword) {

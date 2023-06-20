@@ -9,7 +9,7 @@ const Chart = require('chart.js');
 const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 
 
-// create new baby
+//create new baby
 exports.addChild = catchAsyncErrors(async (req, res) => {
     if (req.file && req.file.path) {
       const image =await  cloudinary.uploader.upload(req.file.path , {folder: "children"})
@@ -17,8 +17,17 @@ exports.addChild = catchAsyncErrors(async (req, res) => {
     }
     req.body.parentID = req.user._id;
     let child = new childModel(req.body);
+    const { weight,headDiameter,height} = req.body;
     const childAge = getAge(child.birthDate);
     const childAgeInMonths = (childAge.years * 12) + childAge.months;
+    
+    const newMeasurement = {
+      weight,
+      headDiameter,
+      height,
+      age:childAgeInMonths
+    }
+    child.measurements.push(newMeasurement)
     const upcomingVaccines = await vaccineModel.find({ age: { $gte: childAgeInMonths } });
     upcomingVaccines.forEach(vaccine => {
       child.vaccines.push(vaccine._id);
@@ -67,7 +76,7 @@ exports.takeVaccine = catchAsyncErrors(async (req, res)=>{
     }
   
 })
-// Delete baby
+//Delete baby
 exports.deleteChild = catchAsyncErrors(async (req, res)=>{
   const {childID} = req.params;
   let child = await childModel.findById(childID)
@@ -104,82 +113,243 @@ exports.childUpComingVaccines = catchAsyncErrors(async (req, res) => {
     res.status(404).json({message: "your child has not upComing Vaccines"});
   }
 });
-// Get All babies
+//Get All babies
 exports.getChildren = getAllFun(childModel);
-// Get Specific baby
+//Get Specific baby
 exports.getChild = catchAsyncErrors(async (req, res)=>{
   const {childID} = req.params;
-  let child = await childModel.findById(childID)
+  let child = await childModel.findById(childID);
+  const childAge = getAge(child.birthDate);
+  const childAgeInMonth = (childAge.years * 12) + childAge.months ;
   let parentId = req.user._id;
   if(child.parentID.equals(parentId)){
-    let document = await childModel.findById(childID);
+    let document = await childModel.findById(childID).populate('vaccines', 'name age reason');
     if (!document) {
       return next(new AppError(`child Not Found`, 404));
     }
-    res.status(200).json({ document});
+    res.status(200).json({ document,AgeInMonths: childAgeInMonth,Age:childAge});
   }
   else {
     res.status(404).json({message: "You do not have permission to get this child."});
   }
 
 })
+//Add new Measurement for baby
+exports.addChildMeasurement = catchAsyncErrors(async(req,res)=>{
+  const {childID} = req.params;
+  const child = await childModel.findById(childID);
+  const childAge = getAge(child.birthDate);
+  const childAgeInMonth = (childAge.years * 12) + childAge.months ;
+  const { weight,headDiameter,height,age} = req.body;
+  const parentId = req.user._id;
+  if(child.parentID.equals(parentId)){
+    if (age > childAgeInMonth) {
+      res.status(401).json({message:'You are not allowed to enter new measurement Age bigger than your child age'})
+    } else {
+      const newMeasurement = {
+        weight,
+        headDiameter,
+        height,
+        age
+      }
+      // Check if measurements array contains an object with the same age
+      const measurementExists = child.measurements.some((measurement) => measurement.age === age);
+  
+      if (measurementExists) {
+        res.status(400).json({message: 'Measurement with the same age already exists'});
+      }
+  
+      child.measurements.push(newMeasurement);
+      await child.save();
+  
+      res.status(200).json({message: 'Measurement added successfully',data: child});
+      }
+    }
+    
+});
+//update specific measurement
+exports.updateChildMeasurement = catchAsyncErrors(async (req, res) => {
+  const { childID, measurementID } = req.params;
+  const child = await childModel.findById(childID);
+  const { weight, headDiameter, height } = req.body;
+  const parentId = req.user._id;
+  if (child.parentID.equals(parentId)) {
+    // Find the index of the measurement in the measurements array
+    const measurementIndex = child.measurements.findIndex((measurement) => measurement._id.equals(measurementID));
+    if (measurementIndex === -1) {
+      return res.status(404).json({message: 'Measurement not found'});
+    }
+    // Update the measurement with the new values
+    child.measurements[measurementIndex].weight = weight;
+    child.measurements[measurementIndex].headDiameter = headDiameter;
+    child.measurements[measurementIndex].height = height;
+
+    await child.save();
+
+    res.status(200).json({message: 'Measurement updated successfully',data: child});
+  }
+});
 // generate bar Chart Reports
 exports.generateChartReport = catchAsyncErrors(async(req,res)=>{
-    const {childID} = req.params;
-    const child = await childModel.findById(childID);
-    const childAge = getAge(child.birthDate);
-    const childAgeInMonth = (childAge.years * 12) + childAge.months ;
-    const childStandard = await standardModel.findOne({ age: childAgeInMonth, gender: child.gender  });
-    // Generate chart data
-    const chartData = {
-      labels: ['Height', 'Weight', 'Head Diameter'],
-      datasets: [
-        {
-          label: 'Child',
-          backgroundColor: 'rgba(54, 162, 235, 0.5)',
-          borderColor: 'rgba(54, 162, 235, 1)',
-          borderWidth: 1,
-          data: [child.height, child.weight, child.headDiameter],
+  const {childID} = req.params;
+  const child = await childModel.findById(childID);
+  // Get the list of measurements for the child
+  const measurements = child.measurements;
+
+  // Initialize the biggest measurement age value
+  let biggestMeasurement = {
+    weight: 0,
+    headDiameter: 0,
+    height: 0,
+    age: 0
+  };
+
+  // Loop through the measurements and find the biggest measurement age
+  measurements.forEach((measurement) => {
+    if (measurement.age > biggestMeasurement.age) {
+      biggestMeasurement = measurement;
+    }
+  });
+  const childStandard = await standardModel.findOne({ age: biggestMeasurement.age, gender: child.gender  });
+
+  // Generate chart data
+  const chartData = {
+    labels: ['Height', 'Weight', 'Head Diameter'],
+    datasets: [
+      {
+        label: 'Child',
+        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1,
+        data: [biggestMeasurement.height, biggestMeasurement.weight, biggestMeasurement.headDiameter],
+      },
+      {
+        label: 'Standard',
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1,
+        data: [childStandard.height, childStandard.weight, childStandard.headDiameter],
+      },
+    ],
+  };
+  // Create a bar chart
+  const chartOptions = {
+    responsive: true,
+    scales: {
+      x: {
+        display: true,
+        title: {
+          display: true,
+          text: 'Measurement',
         },
-        {
-          label: 'Standard',
-          backgroundColor: 'rgba(255, 99, 132, 0.5)',
-          borderColor: 'rgba(255, 99, 132, 1)',
-          borderWidth: 1,
-          data: [childStandard.height, childStandard.weight, childStandard.headDiameter],
+      },
+      y: {
+        display: true,
+        title: {
+          display: true,
+          text: 'Value',
         },
-      ],
-    };
-    // Create a bar chart
-    const chartOptions = {
-      responsive: true,
+      },
+    },
+  };
+  // Create the chart configuration
+const configuration = {
+  type: 'bar',
+  data: chartData,
+  options: chartOptions,
+};
+// Create an instance of ChartJSNodeCanvas
+const chartJSNodeCanvas = new ChartJSNodeCanvas({ width: 400, height: 300 });
+// Generate the chart image
+const chartImage = await chartJSNodeCanvas.renderToDataURL(configuration);
+// Return the chart image in the response
+res.status(200).json({ chartImage });
+});
+//generate line chart report for child measurements
+async function generateChartImage(label, labels, childData, standardData, chartOptions, chartJSNodeCanvas,color1,color2) {
+  chartOptions.data = {
+    labels: labels,
+    datasets: [
+      {
+        label: label,
+        data: childData,
+        borderColor: color1,
+        fill: false,
+      },
+      {
+        label: 'Standard',
+        data: standardData,
+        borderColor: color2,
+        fill: false,
+      },
+    ],
+  };
+
+  // Render the chart image
+  const chartImage = await chartJSNodeCanvas.renderToDataURL(chartOptions);
+  return chartImage;
+};
+exports.generateLineChartReport = async (req, res) => {
+  const { childID } = req.params;
+  const width = 800; // Width of the chart image
+  const height = 600; // Height of the chart image
+
+  // Find the child and its measurements
+  const child = await childModel.findById(childID);
+  const childMeasurements = child.measurements;
+  let smallestChildAge = Infinity;
+
+  // Loop through the measurements and find the smallest measurement age
+  childMeasurements.forEach((measurement) => {
+    if (measurement.age < smallestChildAge) {
+      smallestChildAge = measurement.age;
+    }
+  });
+
+  // Find the standard measurements based on the child's gender
+  const childGender = child.gender;
+  const standardMeasurements = await standardModel.find({ age: { $gte: smallestChildAge }, gender: childGender });
+
+  // Extract the relevant data for the charts
+  const labels = childMeasurements.map((measurement) => measurement.age);
+  const childHeightData = childMeasurements.map((measurement) => measurement.height);
+  const childWeightData = childMeasurements.map((measurement) => measurement.weight);
+  const childHeadDiameterData = childMeasurements.map((measurement) => measurement.headDiameter);
+  const standardHeightData = standardMeasurements.map((measurement) => measurement.height);
+  const standardWeightData = standardMeasurements.map((measurement) => measurement.weight);
+  const standardHeadDiameterData = standardMeasurements.map((measurement) => measurement.headDiameter);
+
+  // Configure the chart options
+  const chartOptions = {
+    type: 'line',
+    options: {
+      responsive: false,
       scales: {
         x: {
-          display: true,
           title: {
             display: true,
-            text: 'Measurement',
+            text: 'Age (months)',
           },
         },
         y: {
-          display: true,
           title: {
             display: true,
-            text: 'Value',
+            text: 'Measurement Value',
           },
         },
       },
-    };
-    // Create the chart configuration
-  const configuration = {
-    type: 'bar',
-    data: chartData,
-    options: chartOptions,
+    },
   };
+
   // Create an instance of ChartJSNodeCanvas
-  const chartJSNodeCanvas = new ChartJSNodeCanvas({ width: 400, height: 300 });
-  // Generate the chart image
-  const chartImage = await chartJSNodeCanvas.renderToDataURL(configuration);
-  // Return the chart image in the response
-  res.status(200).json({ chartImage });
-});
+  const chartJSNodeCanvas = new ChartJSNodeCanvas({ width, height });
+
+  // Generate the chart images for height, weight, and head diameter
+  const heightChartImage = await generateChartImage('Child Height', labels, childHeightData, standardHeightData, chartOptions, chartJSNodeCanvas,'blue', 'lightblue');
+  const weightChartImage = await generateChartImage('Child Weight', labels, childWeightData, standardWeightData, chartOptions, chartJSNodeCanvas,'green', 'lightgreen');
+  const headDiameterChartImage = await generateChartImage('Child Head Diameter', labels, childHeadDiameterData, standardHeadDiameterData, chartOptions, chartJSNodeCanvas,'re');
+
+  // Return the chart images in the response
+  res.status(200).json({ heightChartImage, weightChartImage, headDiameterChartImage });
+};
+
