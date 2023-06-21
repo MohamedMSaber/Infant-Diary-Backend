@@ -123,7 +123,7 @@ exports.getChild = catchAsyncErrors(async (req, res)=>{
   const childAgeInMonth = (childAge.years * 12) + childAge.months ;
   let parentId = req.user._id;
   if(child.parentID.equals(parentId)){
-    let document = await childModel.findById(childID).populate('vaccines');
+    let document = await childModel.findById(childID).populate('vaccines').populate('takenVaccines');
     if (!document) {
       return next(new AppError(`child Not Found`, 404));
     }
