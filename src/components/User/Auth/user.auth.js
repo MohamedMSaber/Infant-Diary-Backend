@@ -8,7 +8,8 @@ const AppError = require('../../../utils/AppError');
 const bcrypt = require('bcrypt');
 const jwt= require("jsonwebtoken");
 const cloudinary = require('../../../utils/cloudinary');
-
+const db = require('../../../utils/firebaseConfig');
+const { collection, doc, setDoc } = require("firebase/firestore");
 // sign Up
 const signup = catchAsyncErrors(async(req , res , next)=>{
     let {userType} = req.params;
@@ -90,7 +91,20 @@ const signup = catchAsyncErrors(async(req , res , next)=>{
 // Confirm Email for Parents
 const confirmEmail = catchAsyncErrors(async (req, res , next) => {
     const userId = req.params.id;
-    await parentModel.findByIdAndUpdate(userId, { emailConfirm: true });
+    const parent = await parentModel.findByIdAndUpdate(userId, { emailConfirm: true });
+    // Save user in Firebase
+    const user = {
+        email:parent.email,
+        name:parent.name,
+        role:'parent',
+        photoURL:"https://static.vecteezy.com/system/resources/previews/009/346/314/original/family-icon-vector-illustration-on-the-white-background-free-png.png"
+    };
+    // Get the users collection
+    const usersCollectionRef = collection(db, "users");
+    // Create a new document with the user's ID
+    const userDocRef = doc(usersCollectionRef, parent._id.toString());
+    // Set the user document data
+    await setDoc(userDocRef, user);
     res.json({ message: "Email Has been Confirmed Successfully", })
 })
 

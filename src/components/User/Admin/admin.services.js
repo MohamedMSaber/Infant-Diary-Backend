@@ -5,6 +5,8 @@ const parentModel = require("../Parent/parent.model");
 const chidModel = require("../../Child/child.model");
 const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 const childModel = require("../../Child/child.model");
+const db = require('../../../utils/firebaseConfig');
+const { collection, doc, setDoc } = require("firebase/firestore");
 
 //Get Pending Doctors
 exports.getPendingDoctors = catchAsyncErrors(async(req, res)=>{
@@ -15,6 +17,29 @@ exports.getPendingDoctors = catchAsyncErrors(async(req, res)=>{
         res.json({message:"No pending doctors"})
     }
 });
+//Accept pending doctors
+exports.AccpetPendingDoctors = catchAsyncErrors(async(req, res)=>{
+  const {DoctorID} = req.params;
+  const doctor = await doctorModel.findByIdAndUpdate(DoctorID, { isAccpeted: 'true' }, { new: true });
+  if (doctor) {
+  // Save user in Firebase
+    const user = {
+        email:doctor.email,
+        name:doctor.name,
+        role:'doctor',
+        photoURL:"https://cdn-icons-png.flaticon.com/512/1021/1021566.png"
+    };
+    // Get the users collection
+    const usersCollectionRef = collection(db, "users");
+    // Create a new document with the user's ID
+    const userDocRef = doc(usersCollectionRef, doctor._id.toString());
+    // Set the user document data
+    await setDoc(userDocRef, user);
+    res.status(200).json({message:"This Doctor has Been accepted", doctor});
+  } else {
+      res.status(401).json({message:"Invalid Doctor"});
+  }
+});
 //Get Pending Hospitals
 exports.getPendingHospitals = catchAsyncErrors(async(req, res)=>{
     const pendingHospitals = await hospitalModel.find({isAccpeted: false});
@@ -22,16 +47,6 @@ exports.getPendingHospitals = catchAsyncErrors(async(req, res)=>{
         res.status(200).json({pendingHospitals})
     } else {
         res.json({message:"No pending Hospitals"})
-    }
-});
-//Accept pending doctors
-exports.AccpetPendingDoctors = catchAsyncErrors(async(req, res)=>{
-    const {DoctorID} = req.params;
-    const doctor = await doctorModel.findByIdAndUpdate(DoctorID, { isAccpeted: 'true' }, { new: true });
-    if (doctor) {
-        res.status(200).json({message:"This Doctor has Been accepted", doctor});
-    } else {
-        res.status(401).json({message:"Invalid Doctor"});
     }
 });
 //Accept pending Hospitals
