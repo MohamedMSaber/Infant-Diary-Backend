@@ -14,7 +14,7 @@ const schema = Schema({
             weight: { type: Number, required: [true, 'weight is required']},
             headDiameter: { type: Number, required: [true, 'headDiameter is required']},
             height: { type: Number, required: [true, 'height is required']},
-            age:{type:Number, required:[true, 'age is required'], unique: [true, "age must be UNIQUE"]}
+            age:{type:Number, required:[true, 'age is required']}
         }
     ]
 },{ timestamps: true })
