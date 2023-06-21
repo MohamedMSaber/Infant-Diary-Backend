@@ -32,9 +32,7 @@ schema.pre('save', async function () {
 })
 
 schema.pre('findOneAndUpdate', async function (next) {
-    console.log(this.model, this.getQuery());
     const hookData = await this.model.findOne(this.getQuery()).select("__v");
-    console.log(hookData);
     this.set({ __v: hookData.__v + 1 });
     next();
 })

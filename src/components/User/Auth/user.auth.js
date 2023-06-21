@@ -86,8 +86,6 @@ const signup = catchAsyncErrors(async(req , res , next)=>{
         return next(new AppError(`User Already Exist`, 400));
     }
 })
-
-
 // Confirm Email for Parents
 const confirmEmail = catchAsyncErrors(async (req, res , next) => {
     const userId = req.params.id;
@@ -107,8 +105,6 @@ const confirmEmail = catchAsyncErrors(async (req, res , next) => {
     await setDoc(userDocRef, user);
     res.json({ message: "Email Has been Confirmed Successfully", })
 })
-
-
 // Sign In
 const signIn = catchAsyncErrors(async (req, res, next) => {
     let {userType} = req.params;
@@ -133,11 +129,20 @@ const signIn = catchAsyncErrors(async (req, res, next) => {
     
     if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
         return next(new AppError(`Incorrect Email or Password`, 400));
-    }else if (!user.emailConfirm && userType ==='parent'){
+    }else if ((!user.emailConfirm || user.isBlocked) && userType ==='parent'){
+        if(user.isBlocked){
+            return next(new AppError(`Your Email has Been Blocked We Will Contact You SOON...`, 400));
+        }
         return next(new AppError(`First Confirm Your Email...`, 400));
-    }else if (!user.isAccpeted && userType ==='doctor'){
-        return next(new AppError(`Your Email Under Reviewing we will Contact You SOON...`, 400));
-    }else if (!user.isAccpeted && userType ==='hospital'){
+    }else if ((!user.isAccpeted || user.isBlocked) && userType ==='doctor'  ){
+        if(user.isBlocked){
+            return next(new AppError(`Your Email has Been Blocked We Will Contact You SOON...`, 400));
+        }
+        return next(new AppError(`Your Email Under Reviewing We Will Contact You SOON...`, 400));
+    }else if ((!user.isAccpeted || user.isBlocked) && userType ==='hospital'){
+        if(user.isBlocked){
+            return next(new AppError(`Your Email has Been Blocked We Will Contact You SOON...`, 400));
+        }
         return next(new AppError(`Your Email Under Reviewing we will Contact You SOON...`, 400));
     }else if (!user.verified && userType ==='admin'){
         return next(new AppError(`Your Account is not verified...`, 400));

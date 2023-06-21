@@ -5,11 +5,8 @@ const router=require('express').Router();
 
 router.route('/').get(ProtectedRoutes,AllowedTo('parent', 'admin', 'doctor', 'hospital'),getDoctors)
                  .put(ProtectedRoutes,AllowedTo('doctor'),updateDoctorProfile);
-router.route('/DoctorInfo').get(ProtectedRoutes,getDoctorInfo)
+router.route('/DoctorInfo').get(ProtectedRoutes,AllowedTo('doctor'),getDoctorInfo);
 router.route('/:doctorID').get(ProtectedRoutes,AllowedTo('parent', 'admin', 'doctor', 'hospital'),getDoctor)
                           .delete(ProtectedRoutes,AllowedTo('admin', 'doctor'),deleteDocotorProfile)
-                          .put(ProtectedRoutes,AllowedTo('parent'),ratingDoctor)
-
-
-
+                          .put(ProtectedRoutes,AllowedTo('parent'),ratingDoctor);
 module.exports = router;

@@ -2,12 +2,27 @@ const { catchAsyncErrors } = require("../../../utils/catchAsync");
 const doctorModel = require("../Doctor/doctor.model");
 const hospitalModel = require("../Hospital/hospital.model");
 const parentModel = require("../Parent/parent.model");
-const chidModel = require("../../Child/child.model");
-const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 const childModel = require("../../Child/child.model");
+const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 const db = require('../../../utils/firebaseConfig');
 const { collection, doc, setDoc } = require("firebase/firestore");
+const e = require("express");
 
+//Block and UnBlock Parent
+exports.blockParents = catchAsyncErrors(async(req, res)=>{
+  const {parentID} = req.params;
+  const {isBlocked} = await parentModel.findById(parentID);
+  const parent = await parentModel.findByIdAndUpdate(parentID, { isBlocked: !isBlocked }, { new: true });
+  if (parent && !isBlocked) {
+    res.status(200).json({message:"This parent has Been Blocked", parent});
+  }
+  else if (parent && isBlocked){
+    res.status(200).json({message:"This parent has Been UnBlocked", parent});
+  }
+  else {
+    res.status(401).json({message:"Invalid parent ID"});
+  }
+})
 //Get Pending Doctors
 exports.getPendingDoctors = catchAsyncErrors(async(req, res)=>{
     const pendingDoctors = await doctorModel.find({isAccpeted: false});
@@ -17,11 +32,12 @@ exports.getPendingDoctors = catchAsyncErrors(async(req, res)=>{
         res.json({message:"No pending doctors"})
     }
 });
-//Accept pending doctors
+//Accept pending doctors or unBlock
 exports.AccpetPendingDoctors = catchAsyncErrors(async(req, res)=>{
   const {DoctorID} = req.params;
-  const doctor = await doctorModel.findByIdAndUpdate(DoctorID, { isAccpeted: 'true' }, { new: true });
-  if (doctor) {
+  const {isBlocked, isAccpeted} = await doctorModel.findById(DoctorID);
+  const doctor = await doctorModel.findByIdAndUpdate(DoctorID, { isAccpeted: 'true' ,isBlocked:'false' }, { new: true });
+  if (doctor && !isBlocked && !isAccpeted) {
   // Save user in Firebase
     const user = {
         email:doctor.email,
@@ -36,11 +52,25 @@ exports.AccpetPendingDoctors = catchAsyncErrors(async(req, res)=>{
     // Set the user document data
     await setDoc(userDocRef, user);
     res.status(200).json({message:"This Doctor has Been accepted", doctor});
+  }
+  else if(isBlocked){
+    res.status(200).json({message:"This Doctor has Been UnBlocked", doctor});
   } else {
       res.status(401).json({message:"Invalid Doctor"});
   }
 });
-//Get Pending Hospitals
+//pending doctor
+exports.blockDoctors = catchAsyncErrors(async(req, res)=>{
+  const {DoctorID} = req.params;
+  const doctor = await doctorModel.findByIdAndUpdate(DoctorID, { isBlocked:'true' }, { new: true });
+  if (doctor) {
+    res.status(200).json({message:"This doctor has Been Blocked", doctor});
+  }
+  else {
+    res.status(401).json({message:"Invalid Doctor ID"});
+  }
+})
+//Get Pending Hospitals or unBlock
 exports.getPendingHospitals = catchAsyncErrors(async(req, res)=>{
     const pendingHospitals = await hospitalModel.find({isAccpeted: false});
     if (pendingHospitals) {
@@ -52,13 +82,29 @@ exports.getPendingHospitals = catchAsyncErrors(async(req, res)=>{
 //Accept pending Hospitals
 exports.AccpetPendingHospitals = catchAsyncErrors(async(req, res)=>{
     const {HospitalID} = req.params;
-    const hospital = await hospitalModel.findByIdAndUpdate(HospitalID, { isAccpeted: 'true' }, { new: true });
-    if (hospital) {
+    const {isBlocked, isAccpeted} = await hospitalModel.findById(HospitalID);
+    const hospital = await hospitalModel.findByIdAndUpdate(HospitalID, { isAccpeted: 'true',isBlocked:'false' }, { new: true });
+    if (hospital && !isBlocked && !isAccpeted) {
         res.status(200).json({message:"This hospital has Been accepted", hospital});
-    } else {
+    }
+    else if(isBlocked){
+      res.status(200).json({message:"This Hospital has Been UnBlocked", hospital});
+    }
+    else {
         res.status(401).json({message:"Invalid hospital"});
     }
 });
+//pending hospital
+exports.blockhospitals = catchAsyncErrors(async(req, res)=>{
+  const {HospitalID} = req.params;
+  const hospital = await hospitalModel.findByIdAndUpdate(HospitalID, { isBlocked:'true' }, { new: true });
+  if (hospital) {
+    res.status(200).json({message:"This hospital has Been Blocked", hospital});
+  }
+  else {
+    res.status(401).json({message:"Invalid hospital ID"});
+  }
+})
 //generate bar Chart for users count
 exports.generateUserCountChart = async (req, res) => {
    // Fetch user counts from the database
