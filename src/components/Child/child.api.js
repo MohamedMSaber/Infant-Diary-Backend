@@ -11,8 +11,8 @@ router.route('/:childID').get(ProtectedRoutes, AllowedTo('parent'),getChild)
                          .get(ProtectedRoutes, AllowedTo('parent'),getChild)
                          .delete(ProtectedRoutes, AllowedTo('parent'),deleteChild);
                          router.route('/measurements/:childID').put(ProtectedRoutes, AllowedTo('parent'),addChildMeasurement);
-                         router.route('/measurements/:childID/:measurementID').put(ProtectedRoutes, AllowedTo('parent'),updateChildMeasurement);
-router.route('/:childID/generateReport').get(ProtectedRoutes, AllowedTo('parent'),generateChartReport)                        
-router.route('/:childID/generateLineChartReport').get(ProtectedRoutes, AllowedTo('parent'),generateLineChartReport)                        
+                         router.route('/measurements/:childID/:measurementID').put(ProtectedRoutes, AllowedTo('parent'),updateChildMeasurement);                    
 router.route('/:childID/:vaccineID').put(ProtectedRoutes, AllowedTo('parent'),takeVaccine);
+router.route('/:childID/generateReport').get(ProtectedRoutes, AllowedTo('parent'),generateChartReport)                        
+router.route('/:childID/generateLineChartReport').get(ProtectedRoutes, AllowedTo('parent'),generateLineChartReport)    
 module.exports= router

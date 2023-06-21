@@ -123,7 +123,7 @@ exports.getChild = catchAsyncErrors(async (req, res)=>{
   const childAgeInMonth = (childAge.years * 12) + childAge.months ;
   let parentId = req.user._id;
   if(child.parentID.equals(parentId)){
-    let document = await childModel.findById(childID).populate('vaccines', 'name age reason');
+    let document = await childModel.findById(childID).populate('vaccines');
     if (!document) {
       return next(new AppError(`child Not Found`, 404));
     }
@@ -210,14 +210,16 @@ exports.generateChartReport = catchAsyncErrors(async(req,res)=>{
       biggestMeasurement = measurement;
     }
   });
-  const childStandard = await standardModel.findOne({ age: biggestMeasurement.age, gender: child.gender  });
 
+  console.log(biggestMeasurement);
+  const childStandard = await standardModel.findOne({ age: biggestMeasurement.age, gender: child.gender  });
+  console.log(childStandard);
   // Generate chart data
   const chartData = {
     labels: ['Height', 'Weight', 'Head Diameter'],
     datasets: [
       {
-        label: 'Child',
+        label: 'Child', 
         backgroundColor: 'rgba(54, 162, 235, 0.5)',
         borderColor: 'rgba(54, 162, 235, 1)',
         borderWidth: 1,
