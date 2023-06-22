@@ -36,9 +36,7 @@ exports.getDoctorInfo = catchAsyncErrors(async (req, res) => {
 //update doctor profile
 exports.updateDoctorProfile = catchAsyncErrors(async (req, res) => {
   const doctorID = req.user._id;
-  console.log(doctorID);
   const doctor = await doctorModel.findById(doctorID);
-  console.log(doctor._id);
   if (doctor) {
     console.log(req.body);
     const newDoctor = await doctorModel.findByIdAndUpdate(doctorID, req.body, { new: true });
