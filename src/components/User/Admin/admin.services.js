@@ -6,8 +6,16 @@ const childModel = require("../../Child/child.model");
 const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 const db = require('../../../utils/firebaseConfig');
 const { collection, doc, setDoc } = require("firebase/firestore");
-const e = require("express");
 
+//Get Blocked Parents
+exports.getBlockedParents = catchAsyncErrors(async(req, res)=>{
+  const BlockedParents = await parentModel.find({isBlocked: true});
+  if (BlockedParents.length >0) {
+      res.status(200).json({BlockedParents})
+  } else {
+      res.json({message:"No Blocked Parents"})
+  }
+});
 //Block and UnBlock Parent
 exports.blockParents = catchAsyncErrors(async(req, res)=>{
   const {parentID} = req.params;
@@ -31,6 +39,15 @@ exports.getPendingDoctors = catchAsyncErrors(async(req, res)=>{
     } else {
         res.json({message:"No pending doctors"})
     }
+});
+//Get Blocked Doctors
+exports.getBlockedDoctors = catchAsyncErrors(async(req, res)=>{
+  const BlockedDoctors = await doctorModel.find({isBlocked: true});
+  if (BlockedDoctors.length >0) {
+      res.status(200).json({BlockedDoctors})
+  } else {
+      res.json({message:"No Blocked doctors"})
+  }
 });
 //Accept pending doctors or unBlock
 exports.AccpetPendingDoctors = catchAsyncErrors(async(req, res)=>{
@@ -59,7 +76,7 @@ exports.AccpetPendingDoctors = catchAsyncErrors(async(req, res)=>{
       res.status(401).json({message:"Invalid Doctor"});
   }
 });
-//pending doctor
+//block doctor
 exports.blockDoctors = catchAsyncErrors(async(req, res)=>{
   const {DoctorID} = req.params;
   const doctor = await doctorModel.findByIdAndUpdate(DoctorID, { isBlocked:'true' }, { new: true });
@@ -70,7 +87,7 @@ exports.blockDoctors = catchAsyncErrors(async(req, res)=>{
     res.status(401).json({message:"Invalid Doctor ID"});
   }
 })
-//Get Pending Hospitals or unBlock
+//Get Pending Hospitals 
 exports.getPendingHospitals = catchAsyncErrors(async(req, res)=>{
     const pendingHospitals = await hospitalModel.find({isAccpeted: false});
     if (pendingHospitals) {
@@ -79,7 +96,16 @@ exports.getPendingHospitals = catchAsyncErrors(async(req, res)=>{
         res.json({message:"No pending Hospitals"})
     }
 });
-//Accept pending Hospitals
+//Get Blocked Hospitals 
+exports.getBlockedHospitals = catchAsyncErrors(async(req, res)=>{
+  const BlockedHospitals = await hospitalModel.find({isBlocked: true});
+  if (BlockedHospitals.length >0) { 
+      res.status(200).json({BlockedHospitals})
+  } else {
+      res.json({message:"No Blocked Hospitals"})
+  }
+});
+//Accept pending Hospitals or unBlock
 exports.AccpetPendingHospitals = catchAsyncErrors(async(req, res)=>{
     const {HospitalID} = req.params;
     const {isBlocked, isAccpeted} = await hospitalModel.findById(HospitalID);
@@ -94,7 +120,7 @@ exports.AccpetPendingHospitals = catchAsyncErrors(async(req, res)=>{
         res.status(401).json({message:"Invalid hospital"});
     }
 });
-//pending hospital
+//block hospital
 exports.blockhospitals = catchAsyncErrors(async(req, res)=>{
   const {HospitalID} = req.params;
   const hospital = await hospitalModel.findByIdAndUpdate(HospitalID, { isBlocked:'true' }, { new: true });
