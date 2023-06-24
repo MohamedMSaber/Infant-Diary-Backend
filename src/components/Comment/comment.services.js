@@ -33,13 +33,13 @@ exports.addComment = catchAsyncErrors(async (req, res) => {
     }
     res.status(200).json({comment,message:"You have been created comment Successfully..."});
 });
-
 // Create Reply
 exports.addReply = catchAsyncErrors(async (req, res) => {
-  req.body.createdBy = req.user._id;
   const {commentID} = req.params;
   let comment = await commentModel.findById(commentID);
   if (comment) {
+    req.body.createdBy = req.user._id;
+    req.body.createdByModel = req.user.role;
     comment.reply.push(req.body);
     await comment.save();
     const ownerID = comment.createdBy;
@@ -55,10 +55,40 @@ exports.addReply = catchAsyncErrors(async (req, res) => {
     res.status(200).json({message:"You have been created Reply Successfully..."});
   }
 });
-
-// Edit comment
-exports.editComment = updateFun(commentModel);
-
+// Update comment
+exports.updateComment = catchAsyncErrors(async (req,res)=>{
+  const userID = req.user._id;
+  const {commentID} = req.params;
+  const comment = await commentModel.findById(commentID);
+  if(comment.createdBy.equals(userID)){
+    let updatedComment = await commentModel.findByIdAndUpdate(commentID, req.body,{new:true} );
+    if (!updatedComment) {
+      return next(new AppError(`Comment Not Found To Update`, 404));
+    }
+    res.status(200).json({ message: `Comment has Been Updated`  , updatedComment});
+  }
+  else {
+  res.status(404).json({message: "You do not have permission to update this Comment."});
+  }
+})
+// Update Reply
+exports.updateReply = catchAsyncErrors(async (req,res)=>{
+  const userID = req.user._id;
+  const {commentID, replyID} = req.params;
+  const comment = await commentModel.findById(commentID);
+  // Check if the comment has the specified reply
+  const replyIndex = comment.reply.findIndex((r) => r._id.equals(replyID));
+  if (replyIndex !== -1 && comment.reply[replyIndex].createdBy.equals(userID)) {
+    // Update the properties of the reply
+    comment.reply[replyIndex].body = req.body.body;
+    // Save the updated comment
+    const updatedComment = await comment.save();
+    res.status(200).json({ message: 'Reply updated successfully', updatedComment });
+  } 
+  else {
+  res.status(404).json({message: 'Reply not found or unauthorized'});
+  }
+})
 // Delete comment
 exports.deleteComment = deleteFun(commentModel);
 
