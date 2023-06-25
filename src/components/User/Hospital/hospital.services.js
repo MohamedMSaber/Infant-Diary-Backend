@@ -7,7 +7,7 @@ const  cloudinary  = require("../../../utils/cloudinary");
 
 //get all hospitals and search by hospital name and service name
 exports.getHospitals = catchAsyncErrors(async (req, res) => {
-  const hospitals = await hospitalModel.find({isAccpeted: true}).populate('services', 'name age');
+  const hospitals = await hospitalModel.find({isAccpeted: true ,isBlocked: false}).populate('services', 'name age');
   const filteredHospitals = [];
   const filteredServices = [];
   // Search for hospitals with the given keyword and if input service name
@@ -64,7 +64,6 @@ exports.getHospitals = catchAsyncErrors(async (req, res) => {
     res.status(200).json({ hospitals });
   }
 });
-
 //get Specific Hospital
 exports.getSpecificHospital = catchAsyncErrors(async (req, res) => {
   const  hospitalID  = req.params.hospitalID || req.user._id; 
@@ -85,7 +84,6 @@ exports.getSpecificHospital = catchAsyncErrors(async (req, res) => {
   }
   
 });
-
 //update hospital profile
 exports.updateHospitalProfile = catchAsyncErrors(async (req, res) => {
   const hospitalID = req.user._id;
@@ -96,8 +94,7 @@ exports.updateHospitalProfile = catchAsyncErrors(async (req, res) => {
   } else {
     res.status(404).json({ message: "can not update your profile" })
   }
-})
-
+});
 //Delete Hospital profile
 exports.deleteHospitalProfile = catchAsyncErrors(async (req, res) => {
   const  hospitalID  = req.params.hospitalID || req.user._id; 
@@ -122,7 +119,7 @@ exports.deleteHospitalProfile = catchAsyncErrors(async (req, res) => {
   }
   res.status(200).json({ message: `this hospital has Been deleted`  , deletedHospital});
   
-})
+});
 
 // Get Specific hospital
 exports.getHospital = getSpecficFun(hospitalModel);

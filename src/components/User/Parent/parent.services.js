@@ -1,4 +1,5 @@
 const { catchAsyncErrors } = require("../../../utils/catchAsync");
+const childModel = require("../../Child/child.model");
 const parentModel = require("./parent.model");
 //get User Info
 exports.getUser = catchAsyncErrors(async (req,res)=>{
@@ -22,6 +23,19 @@ exports.updateParentProfile = catchAsyncErrors(async (req,res)=>{
         res.status(404).json({ message: "can not update your profile" })
     }
 });
+//Delete parent profile
+exports.deleteParentProfile = catchAsyncErrors(async (req, res) => {
+    const  ParentID  = req.params.ParentID || req.user._id; 
+    const Parent = await parentModel.findById(ParentID);
+    let deletedParent = await parentModel.findByIdAndDelete(ParentID);
+    // Delete the corresponding children objects
+    await childModel.deleteMany({parentID:Parent._id})
+    if (!deletedParent) {
+      return next(new AppError(`Parent Not Found To delete`, 404));
+    }
+    res.status(200).json({ message: `this Parent has Been deleted`  , deletedParent});
+    
+  });
 
 
 
