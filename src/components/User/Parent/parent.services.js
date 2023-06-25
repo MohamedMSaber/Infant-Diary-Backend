@@ -9,7 +9,7 @@ exports.getUser = catchAsyncErrors(async (req,res)=>{
 })
 //get All Parent
 exports.getAllParent = catchAsyncErrors(async (req,res)=>{
-    const Parents = await parentModel.find();
+    const Parents = await parentModel.find({isBlocked:false});
     res.status(200).json(Parents);
 });
 //update parent profile
@@ -35,7 +35,7 @@ exports.deleteParentProfile = catchAsyncErrors(async (req, res) => {
     }
     res.status(200).json({ message: `this Parent has Been deleted`  , deletedParent});
     
-  });
+});
 
 
 
