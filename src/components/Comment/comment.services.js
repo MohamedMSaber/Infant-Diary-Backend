@@ -8,8 +8,6 @@ const doctorModel = require('../User/Doctor/doctor.model');
 const adminModel = require('../User/Admin/admin.model')
 const postModel = require("../Post/post.model")
 
-
-
 // Create Comment
 exports.addComment = catchAsyncErrors(async (req, res) => {
     req.body.createdBy = req.user._id;
@@ -90,7 +88,39 @@ exports.updateReply = catchAsyncErrors(async (req,res)=>{
   }
 })
 // Delete comment
-exports.deleteComment = deleteFun(commentModel);
+exports.deleteComment = catchAsyncErrors(async (req,res)=>{
+  const {commentID} = req.params;
+  const userID = req.user._id;
+  const comment = await commentModel.findById(commentID);
+  if(comment.createdBy.equals(userID)){
+      let deletedComment = await commentModel.findByIdAndDelete(commentID);
+      if (!deletedComment) {
+          return next(new AppError(`comment Not Found To delete`, 404));
+      }
+      res.status(200).json({ message: `comment has Been deleted`});
+  } 
+  else {
+    res.status(404).json({message: "You do not have permission to delete this comment."});
+  }
+})
+// Delete Reply
+exports.deleteReply = catchAsyncErrors(async (req,res)=>{
+  const userID = req.user._id;
+  const {commentID, replyID} = req.params;
+  const comment = await commentModel.findById(commentID);
+  // Check if the comment has the specified reply
+  const replyIndex = comment.reply.findIndex((r) => r._id.equals(replyID));
+  if (replyIndex !== -1 && comment.reply[replyIndex].createdBy.equals(userID)) {
+    // Filter out the reply to be deleted
+    comment.reply = comment.reply.filter((reply) => !reply._id.equals(replyID));
+    // Save the updated comment
+    const updatedComment = await comment.save();
+    res.status(200).json({ message: 'Reply deleted successfully', updatedComment });
+  } 
+  else {
+  res.status(404).json({message: 'Reply not found or unauthorized'});
+  }
+})
 
 // Get All comments
 exports.getComments = getAllFun(commentModel);

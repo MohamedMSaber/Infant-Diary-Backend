@@ -43,7 +43,6 @@ exports.deleteclinic = catchAsyncErrors(async (req, res)=>{
   const {clinicID} = req.params;
   const clinic = await clinicModel.findById(clinicID);
   const doctorID = req.user._id;
-  console.log(doctorID);
   if(clinic.doctorID.equals(doctorID)){
     let deletedclinic = await clinicModel.findByIdAndDelete(clinicID);
     if (!deletedclinic) {
