@@ -6,7 +6,6 @@ const childModel = require("../../Child/child.model");
 const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 const db = require('../../../utils/firebaseConfig');
 const { collection, doc, setDoc } = require("firebase/firestore");
-
 //Get Blocked Parents
 exports.getBlockedParents = catchAsyncErrors(async(req, res)=>{
   const BlockedParents = await parentModel.find({isBlocked: true});

@@ -14,7 +14,6 @@ exports.getDoctors = catchAsyncErrors(async (req, res) => {
   let doctors = await apiFeatures.mongooseQuery;
   res.status(200).json({ page: apiFeatures.page, doctors });
 });
-
 //get Specific Doctor for user
 exports.getDoctor = catchAsyncErrors(async (req, res) => {
   const { doctorID } = req.params;
@@ -24,15 +23,13 @@ exports.getDoctor = catchAsyncErrors(async (req, res) => {
   } else {
     res.status(404).json({ message: "Doctor ID not found" });
   }
-})
-
+});
 //get doctor information for doctor
 exports.getDoctorInfo = catchAsyncErrors(async (req, res) => {
   const doctorID = req.user._id;
   const doctor = await doctorModel.findOne(doctorID);
   res.status(200).json(doctor);
-})
-
+});
 //update doctor profile
 exports.updateDoctorProfile = catchAsyncErrors(async (req, res) => {
   const doctorID = req.user._id;
@@ -44,8 +41,7 @@ exports.updateDoctorProfile = catchAsyncErrors(async (req, res) => {
   } else {
     res.status(404).json({ message: "can not update your profile" })
   }
-})
-
+});
 //Delete Docotor profile
 exports.deleteDocotorProfile = catchAsyncErrors(async (req, res) => {
   const { doctorID } = req.params; 
@@ -62,8 +58,7 @@ exports.deleteDocotorProfile = catchAsyncErrors(async (req, res) => {
     }
     res.status(200).json({ message: `this doctor has Been deleted`  , document});
   }
-})
-
+});
 //Rating Doctor 
 exports.ratingDoctor = catchAsyncErrors(async (req, res) => {
   const { doctorID } = req.params;
@@ -90,22 +85,23 @@ exports.ratingDoctor = catchAsyncErrors(async (req, res) => {
 
     // Add the new rating to the doctor's ratings array
     doctor.ratings.push(newRating);
-
-    // Calculate the updated average rating
-    const ratingsCount = doctor.ratings.length; //2
-    const ratingsSum = doctor.ratings.reduce((sum, r) => sum + r.rating, 0); //8
-    const ratingAverage = ratingsSum / ratingsCount; //4
-    // Get the maximum and minimum ratings
-    const doctorRatings = doctor.ratings.map(r => r.rating);
-    const maxRating = Math.max(...doctorRatings);
-    const minRating = Math.min(...doctorRatings);
-
-    const ratings = ((ratingAverage - minRating) / (maxRating - minRating))*(5);
-    console.log(ratings);
-    // Update the doctor's ratingAverage field with the normalized value
-    doctor.ratingAverage = ratings;
     // Save the updated doctor document
     await doctor.save();
-
+    // Calculate the updated average rating
+    const ratingsCount = doctor.ratings.length; //1
+    const ratingsSum = doctor.ratings.reduce((sum, r) => sum + r.rating, 0); //5
+    const ratingAverage = ratingsSum / ratingsCount; //5
+    // Get the maximum and minimum ratings
+    const doctorRatings = doctor.ratings.map(r => r.rating);
+    const maxRating = Math.max(...doctorRatings);//5
+    const minRating = Math.min(...doctorRatings);//5
+    const ratings = ((ratingAverage - minRating) / (maxRating - minRating))*(5);
+    // Update the doctor's ratingAverage field with the normalized value
+    if ((ratingAverage == minRating) || (maxRating == minRating)) {
+        doctor.ratingAverage = minRating;
+    } else {
+        doctor.ratingAverage = ratings;
+    }
+    await doctor.save();
     res.status(200).json({ message: "Rating saved successfully" });
 });

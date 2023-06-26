@@ -20,7 +20,7 @@ const schema = Schema({
           date: { type: Date, default: Date.now }
         }
     ],
-    ratingAverage: {type: Number}
+    ratingAverage: {type: Number, default:0}
 },{ timestamps: true, toJSON: { virtuals: true }, toObject:{ virtuals: true } })
 
 schema.virtual('clinics',{
@@ -28,17 +28,15 @@ schema.virtual('clinics',{
     localField: '_id',
     foreignField: 'doctorID'
 });
-
 schema.pre('findOne', function () {
     this.populate('clinics' , '')
-})
-
+});
 schema.pre('save', async function () { 
     // Check if the document is new (sign-up process)
     if (this.isNew) {
         this.password = await bcrypt.hash(this.password, parseInt(process.env.saltRound));
     }
-})
+});
 
 
 module.exports = model('doctor' , schema);
