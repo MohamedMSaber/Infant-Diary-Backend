@@ -190,9 +190,234 @@ exports.updateChildMeasurement = catchAsyncErrors(async (req, res) => {
   }
 });
 // generate bar Chart Reports
-exports.generateChartReport = catchAsyncErrors(async(req,res)=>{
-  const {childID} = req.params;
+// exports.generateChartReport = catchAsyncErrors(async(req,res)=>{
+//   const {childID} = req.params;
+//   const child = await childModel.findById(childID);
+//   // Get the list of measurements for the child
+//   const measurements = child.measurements;
+
+//   // Initialize the biggest measurement age value
+//   let biggestMeasurement = {
+//     weight: 0,
+//     headDiameter: 0,
+//     height: 0,
+//     age: 0
+//   };
+
+//   // Loop through the measurements and find the biggest measurement age
+//   measurements.forEach((measurement) => {
+//     if (measurement.age > biggestMeasurement.age) {
+//       biggestMeasurement = measurement;
+//     }
+//   });
+
+//   const childStandard = await standardModel.findOne({ age: biggestMeasurement.age, gender: child.gender  });
+
+//   // Generate chart data
+//   const chartData = {
+//     labels: ['Height', 'Weight', 'Head Diameter'],
+//     datasets: [
+//       {
+//         label: 'Child', 
+//         backgroundColor: 'rgba(54, 162, 235, 0.5)',
+//         borderColor: 'rgba(54, 162, 235, 1)',
+//         borderWidth: 1,
+//         data: [biggestMeasurement.height, biggestMeasurement.weight, biggestMeasurement.headDiameter],
+//       },
+//       {
+//         label: 'Standard',
+//         backgroundColor: 'rgba(255, 99, 132, 0.5)',
+//         borderColor: 'rgba(255, 99, 132, 1)',
+//         borderWidth: 1,
+//         data: [childStandard.height, childStandard.weight, childStandard.headDiameter],
+//       },
+//     ],
+//   };
+//   // Create a bar chart
+//   const chartOptions = {
+//     responsive: true,
+//     scales: {
+//       x: {
+//         display: true,
+//         title: {
+//           display: true,
+//           text: 'Measurement',
+//         },
+//       },
+//       y: {
+//         display: true,
+//         title: {
+//           display: true,
+//           text: 'Value',
+//         },
+//       },
+//     },
+//   };
+//   // Create the chart configuration
+// const configuration = {
+//   type: 'bar',
+//   data: chartData,
+//   options: chartOptions,
+// };
+// // Create an instance of ChartJSNodeCanvas
+// const chartJSNodeCanvas = new ChartJSNodeCanvas({ width: 400, height: 300 });
+// // Generate the chart image
+// const chartImage = await chartJSNodeCanvas.renderToDataURL(configuration);
+// // Return the chart image in the response
+// res.status(200).json({ chartImage });
+// });
+// exports.generateChartReport = catchAsyncErrors(async (req, res) => {
+//   const { childID } = req.params;
+//   const child = await childModel.findById(childID);
+
+//   // Get the list of measurements for the child
+//   const measurements = child.measurements;
+//   // Initialize the biggest measurement age value
+//   let biggestMeasurement = {
+//     weight: 0,
+//     headDiameter: 0,
+//     height: 0,
+//     age: 0
+//   };
+  
+//   // Loop through the measurements and find the biggest measurement age
+//   measurements.forEach((measurement) => {
+//     if (measurement.age > biggestMeasurement.age) {
+//       biggestMeasurement = measurement;
+//     }
+//   });
+//   console.log(biggestMeasurement);
+//   const childStandard = await standardModel.findOne({ age: biggestMeasurement.age, gender: child.gender  });
+//   // // Initialize arrays to store the measurements for weight, height, and head diameter
+//   // const weightMeasurements = [];
+//   // const heightMeasurements = [];
+//   // const headMeasurements = [];
+
+//   // Loop through the measurements and extract the values for each category
+//   // measurements.forEach((measurement) => {
+//   //   weightMeasurements.push(measurement.weight);
+//   //   heightMeasurements.push(measurement.height);
+//   //   headMeasurements.push(measurement.headDiameter);
+//   // });
+
+//   // const childStandard = await standardModel.findOne({
+//   //   age: { $in: measurements.map((measurement) => measurement.age) },
+//   //   gender: child.gender,
+//   // });
+
+//   // Generate chart data for weight
+//   const weightChartData = {
+//     labels: 'Weight',
+//     datasets: [
+//       {
+//         label: 'Weight',
+//         backgroundColor: 'rgba(54, 162, 235, 0.5)',
+//         borderColor: 'rgba(54, 162, 235, 1)',
+//         borderWidth: 1,
+//         data: biggestMeasurement.weight,
+//       },
+//       {
+//         label: 'Standard',
+//         backgroundColor: 'rgba(255, 99, 132, 0.5)',
+//         borderColor: 'rgba(255, 99, 132, 1)',
+//         borderWidth: 1,
+//         data: childStandard.weight,
+//       },
+//     ],
+//   };
+
+//   // // Generate chart data for height
+//   // const heightChartData = {
+//   //   labels: measurements.map((measurement) => measurement.age),
+//   //   datasets: [
+//   //     {
+//   //       label: 'Height',
+//   //       backgroundColor: 'rgba(54, 162, 235, 0.5)',
+//   //       borderColor: 'rgba(54, 162, 235, 1)',
+//   //       borderWidth: 1,
+//   //       data: heightMeasurements,
+//   //     },
+//   //     {
+//   //       label: 'Standard',
+//   //       backgroundColor: 'rgba(255, 99, 132, 0.5)',
+//   //       borderColor: 'rgba(255, 99, 132, 1)',
+//   //       borderWidth: 1,
+//   //       data: measurements.map((measurement) => childStandard.height),
+//   //     },
+//   //   ],
+//   // };
+
+//   // // Generate chart data for head diameter
+//   // const headChartData = {
+//   //   labels: measurements.map((measurement) => measurement.age),
+//   //   datasets: [
+//   //     {
+//   //       label: 'Head Diameter',
+//   //       backgroundColor: 'rgba(54, 162, 235, 0.5)',
+//   //       borderColor: 'rgba(54, 162, 235, 1)',
+//   //       borderWidth: 1,
+//   //       data: headMeasurements,
+//   //     },
+//   //     {
+//   //       label: 'Standard',
+//   //       backgroundColor: 'rgba(255, 99, 132, 0.5)',
+//   //       borderColor: 'rgba(255, 99, 132, 1)',
+//   //       borderWidth: 1,
+//   //       data: measurements.map((measurement) => childStandard.headDiameter),
+//   //     },
+//   //   ],
+//   // };
+
+//   // Create chart options
+//   const chartOptions = {
+//     responsive: true,
+//     scales: {
+//       x: {
+//         display: true,
+//         title: {
+//           display: true,
+//           text: 'Age',
+//         },
+//       },
+//       y: {
+//         display: true,
+//         title: {
+//           display: true,
+//           text: 'Value',
+//         },
+//       },
+//     },
+//   };
+
+//   // Create instances of ChartJSNodeCanvas
+//   const chartJSNodeCanvas = new ChartJSNodeCanvas({ width: 400, height: 300 });
+
+//   // Generate the chart images
+//   const weightChartImage = await chartJSNodeCanvas.renderToDataURL({
+//     type: 'bar',
+//     data: weightChartData,
+//     options: chartOptions,
+//   });
+
+//   // const heightChartImage = await chartJSNodeCanvas.renderToDataURL({
+//   //   type: 'bar',
+//   //   data: heightChartData,
+//   //   options: chartOptions,
+//   // });
+
+//   // const headChartImage = await chartJSNodeCanvas.renderToDataURL({
+//   //   type: 'bar',
+//   //   data: headChartData,
+//   //   options: chartOptions,
+//   // });
+
+//   // Return the chart images in the response
+//   res.status(200).json({ weightChartImage });
+// });
+exports.generateChartReport = catchAsyncErrors(async (req, res) => {
+  const { childID } = req.params;
   const child = await childModel.findById(childID);
+
   // Get the list of measurements for the child
   const measurements = child.measurements;
 
@@ -201,7 +426,7 @@ exports.generateChartReport = catchAsyncErrors(async(req,res)=>{
     weight: 0,
     headDiameter: 0,
     height: 0,
-    age: 0
+    age: 0,
   };
 
   // Loop through the measurements and find the biggest measurement age
@@ -211,61 +436,141 @@ exports.generateChartReport = catchAsyncErrors(async(req,res)=>{
     }
   });
 
-  const childStandard = await standardModel.findOne({ age: biggestMeasurement.age, gender: child.gender  });
+  const childStandard = await standardModel.findOne({
+    age: biggestMeasurement.age,
+    gender: child.gender,
+  });
 
-  // Generate chart data
-  const chartData = {
-    labels: ['Height', 'Weight', 'Head Diameter'],
+  // Generate chart data for weight
+  const weightChartData = {
+    labels: ['Weight'],
     datasets: [
       {
-        label: 'Child', 
-        backgroundColor: 'rgba(54, 162, 235, 0.5)',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 1,
-        data: [biggestMeasurement.height, biggestMeasurement.weight, biggestMeasurement.headDiameter],
+        label: 'Child',
+        backgroundColor: '#4fc3f7',
+        borderColor: '#2196f3',
+        borderWidth: 2,
+        data: [biggestMeasurement.weight],
       },
       {
         label: 'Standard',
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 1,
-        data: [childStandard.height, childStandard.weight, childStandard.headDiameter],
+        backgroundColor: '#ffc107',
+        borderColor: '#ff9800',
+        borderWidth: 2,
+        data: [childStandard.weight],
       },
     ],
   };
-  // Create a bar chart
+
+  // Generate chart data for height
+  const heightChartData = {
+    labels: ['Height'],
+    datasets: [
+      {
+        label: 'Child',
+        backgroundColor: '#81c784',
+        borderColor: '#4caf50',
+        borderWidth: 2,
+        data: [biggestMeasurement.height],
+      },
+      {
+        label: 'Standard',
+        backgroundColor: '#f06292',
+        borderColor: '#e91e63',
+        borderWidth: 2,
+        data: [childStandard.height],
+      },
+    ],
+  };
+
+  // Generate chart data for head diameter
+  const headChartData = {
+    labels: ['Head Diameter'],
+    datasets: [
+      {
+        label: 'Child',
+        backgroundColor: '#9575cd',
+        borderColor: '#673ab7',
+        borderWidth: 2,
+        data: [biggestMeasurement.headDiameter],
+      },
+      {
+        label: 'Standard',
+        backgroundColor: '#aed581',
+        borderColor: '#8bc34a',
+        borderWidth: 2,
+        data: [childStandard.headDiameter],
+      },
+    ],
+  };
+
+  // Create chart options
   const chartOptions = {
     responsive: true,
     scales: {
       x: {
         display: true,
-        title: {
-          display: true,
-          text: 'Measurement',
+        
+        ticks: {
+          color: '#666',
+          font: {
+            size: 12,
+            weight: 'bold',
+          },
         },
       },
       y: {
         display: true,
-        title: {
-          display: true,
-          text: 'Value',
+        ticks: {
+          color: '#666',
+          font: {
+            size: 12,
+            weight: 'bold',
+          },
         },
       },
     },
   };
-  // Create the chart configuration
-const configuration = {
-  type: 'bar',
-  data: chartData,
-  options: chartOptions,
-};
-// Create an instance of ChartJSNodeCanvas
-const chartJSNodeCanvas = new ChartJSNodeCanvas({ width: 400, height: 300 });
-// Generate the chart image
-const chartImage = await chartJSNodeCanvas.renderToDataURL(configuration);
-// Return the chart image in the response
-res.status(200).json({ chartImage });
+
+  // Add unit labels to chart axes
+  weightChartData.labels[0] += ' (grams)';
+  heightChartData.labels[0] += ' (cm)';
+  headChartData.labels[0] += ' (cm)';
+
+  // Create an instance of ChartJSNodeCanvas
+  const chartJSNodeCanvas = new ChartJSNodeCanvas({ width: 400, height: 300 });
+
+  // Generate the weight chart image
+  const weightChartImage = await chartJSNodeCanvas.renderToDataURL({
+    type: 'bar',
+    data: weightChartData,
+    options: chartOptions,
+  });
+
+  // Generate the height chart image
+  const heightChartImage = await chartJSNodeCanvas.renderToDataURL({
+    type: 'bar',
+    data: heightChartData,
+    options: chartOptions,
+  });
+
+  // Generate the head diameter chart image
+  const headChartImage = await chartJSNodeCanvas.renderToDataURL({
+    type: 'bar',
+    data: headChartData,
+    options: chartOptions,
+  });
+
+  // Return the chart images in the response
+  res.status(200).json({
+    weightChartImage,
+    heightChartImage,
+    headChartImage,
+  });
 });
+
+
+
 //generate line chart report for child measurements
 async function generateChartImage(label, labels, childData, standardData, chartOptions, chartJSNodeCanvas,color1,color2) {
   chartOptions.data = {

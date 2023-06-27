@@ -5,7 +5,7 @@ const schema = Schema({
     body: { type: String, required: [true, 'body is required']},
     answer: { type: String, required: [true, 'answer is required']},
     age: { type: Number, required: [true, 'age is required']},
-    virusName: { type: String, required: [true, 'virus is required']},
+    questionHeading: { type: String, required: [true, 'questionHeading is required']},
 },{ timestamps: true })
 
 
