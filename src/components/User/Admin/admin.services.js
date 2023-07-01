@@ -36,7 +36,7 @@ exports.blockParents = catchAsyncErrors(async(req, res)=>{
 //Get Pending Doctors
 exports.getPendingDoctors = catchAsyncErrors(async(req, res)=>{
     const pendingDoctors = await doctorModel.find({isAccpeted: false});
-    if (pendingDoctors) {
+    if (pendingDoctors.length >0) {
         res.status(200).json({pendingDoctors})
     } else {
         res.json({message:"No pending doctors"})
@@ -48,7 +48,7 @@ exports.getBlockedDoctors = catchAsyncErrors(async(req, res)=>{
   if (BlockedDoctors.length >0) {
       res.status(200).json({BlockedDoctors})
   } else {
-      res.json({message:"No Blocked doctors"})
+      res.status(404).json({message:"No Blocked doctors"})
   }
 });
 //Accept pending doctors or unBlock
@@ -101,7 +101,7 @@ exports.AccpetPendingDoctors = catchAsyncErrors(async(req, res)=>{
   else if(isBlocked){
     res.status(200).json({message:"This Doctor has Been UnBlocked", doctor});
   } else {
-      res.status(401).json({message:"Invalid Doctor"});
+    res.status(401).json({message:"Invalid Doctor"});
   }
 });
 //block doctor
@@ -118,7 +118,7 @@ exports.blockDoctors = catchAsyncErrors(async(req, res)=>{
 //Get Pending Hospitals 
 exports.getPendingHospitals = catchAsyncErrors(async(req, res)=>{
     const pendingHospitals = await hospitalModel.find({isAccpeted: false});
-    if (pendingHospitals) {
+    if (pendingHospitals.length >0) {
         res.status(200).json({pendingHospitals})
     } else {
         res.json({message:"No pending Hospitals"})
