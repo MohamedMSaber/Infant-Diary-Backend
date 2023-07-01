@@ -139,31 +139,33 @@ exports.AccpetPendingHospitals = catchAsyncErrors(async(req, res)=>{
     const {isBlocked, isAccpeted} = await hospitalModel.findById(HospitalID);
     const hospital = await hospitalModel.findByIdAndUpdate(HospitalID, { isAccpeted: 'true',isBlocked:'false' }, { new: true });
     if (hospital && !isBlocked && !isAccpeted) {
-        // Create a Stripe customer
-        const subscriper = await stripe.customers.create({
-          email: hospital.email,
-          metadata: {
-            hospitalId: hospital._id, // Store the hospital's ID in the customer metadata
+      // Create a Stripe customer
+      const subscriper = await stripe.customers.create({
+        email: hospital.email,
+        metadata: {
+          hospitalId: hospital._id, // Store the hospital's ID in the customer metadata
+        },
+      });
+      // Create a Stripe session for the checkout
+      const session = await stripe.checkout.sessions.create({
+        customer: subscriper.id,
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price: process.env.STRIPE_PLAN_ID, // Use the appropriate Stripe plan ID for your annual subscription
+            quantity: 1,
           },
-        });
-        // Create a Stripe session for the checkout
-        const session = await stripe.checkout.sessions.create({
-          customer: subscriper.id,
-          payment_method_types: ['card'],
-          line_items: [
-            {
-              price: process.env.STRIPE_PLAN_ID, // Use the appropriate Stripe plan ID for your annual subscription
-              quantity: 1,
-            },
-          ],
-          mode: 'subscription',
-          cancel_url : process.env.CANCEL_URL || 'https://google.com/',
-          success_url :`https://infant-diary-backend.onrender.com/api/v1/admin/ActiveSubscriper/${hospital._id}`
-        });
-        // Update the hospital's subscription details
-        hospital.subscription.status = 'inactive'; // Set the status as pending until the payment is completed
-        hospital.subscription.sessionId = session.id;
-        res.status(200).json({message:"This hospital has Been accepted", hospital});
+        ],
+        mode: 'subscription',
+        cancel_url : process.env.CANCEL_URL || 'https://google.com/',
+        success_url :`https://infant-diary-backend.onrender.com/api/v1/admin/ActiveSubscriper/${hospital._id}`
+      });
+      // Update the hospital's subscription details
+      hospital.subscription.status = 'inactive'; // Set the status as pending until the payment is completed
+      hospital.subscription.sessionId = session.id;
+      const html = `<a href = "${session.url}">Click Here To Subscribe the Website</a>`;
+      sendEmail(hospital.email ,html,"Infant Diary Subscribtion")
+      res.status(200).json({message:"This hospital has Been accepted", hospital});
     }
     else if(isBlocked){
       res.status(200).json({message:"This Hospital has Been UnBlocked", hospital});

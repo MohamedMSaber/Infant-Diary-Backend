@@ -10,7 +10,6 @@ exports.createClinic = catchAsyncErrors(async (req, res) => {
   await clinic.save();
   res.status(200).json({clinic,message:"You have been created clinic Successfully..."});
 });
-
 exports.getClinics = catchAsyncErrors(async (req, res) => {
   let apiFeatures = new ApiFeatures(clinicModel.find(), req.query).paginate().fields().filter().sort()
   if (req.query.keyword) {
@@ -20,13 +19,11 @@ exports.getClinics = catchAsyncErrors(async (req, res) => {
   clinics = await apiFeatures.mongooseQuery
   res.status(200).json({ page: apiFeatures.page, clinics });
 });
-
 // update clinic
 exports.updateClinic = catchAsyncErrors(async (req, res)=>{
   const {clinicID} = req.params;
   const clinic = await clinicModel.findById(clinicID);
   const doctorID = req.user._id;
-  console.log(doctorID);
   if(clinic.doctorID.equals(doctorID)){
     let updatedclinic = await clinicModel.findByIdAndUpdate(clinicID, req.body,{new:true} );
     if (!updatedclinic) {
@@ -38,7 +35,6 @@ exports.updateClinic = catchAsyncErrors(async (req, res)=>{
     res.status(404).json({message: "You do not have permission to update this clinic."});
   }
 })
-
 // Delete clinic
 exports.deleteclinic = catchAsyncErrors(async (req, res)=>{
   const {clinicID} = req.params;
@@ -55,6 +51,5 @@ exports.deleteclinic = catchAsyncErrors(async (req, res)=>{
     res.status(404).json({message: "You do not have permission to delete this clinic."});
   }
 })
-
 // Get Specific clinic
 exports.getClinic = getSpecficFun(clinicModel);
