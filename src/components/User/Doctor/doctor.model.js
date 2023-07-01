@@ -20,7 +20,14 @@ const schema = Schema({
           date: { type: Date, default: Date.now }
         }
     ],
-    ratingAverage: {type: Number, default:0}
+    ratingAverage: {type: Number, default:0},
+    subscription: {
+        status: { type: String, enum: ['active', 'inactive'], default: 'inactive' },
+        startDate: { type: Date },
+        endDate: { type: Date },
+        paymentMethod: { type: String },
+        subscriptionId: { type: String }
+    }
 },{ timestamps: true, toJSON: { virtuals: true }, toObject:{ virtuals: true } })
 
 schema.virtual('clinics',{

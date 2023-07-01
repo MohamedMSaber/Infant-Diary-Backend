@@ -1,5 +1,5 @@
 const { ProtectedRoutes, AllowedTo } = require('../Auth/user.auth');
-const { getPendingDoctors, getPendingHospitals, AccpetPendingDoctors, AccpetPendingHospitals, generateUserCountChart, blockParents, blockDoctors, blockhospitals, getBlockedDoctors, getBlockedHospitals, getBlockedParents } = require('./admin.services');
+const { getPendingDoctors, getPendingHospitals, AccpetPendingDoctors, AccpetPendingHospitals, generateUserCountChart, blockParents, blockDoctors, blockhospitals, getBlockedDoctors, getBlockedHospitals, getBlockedParents, ActiveSubscriberStatus } = require('./admin.services');
 
 const router=require('express').Router();
 
@@ -14,4 +14,5 @@ router.route('/blockDoctor/:DoctorID').put(ProtectedRoutes,AllowedTo('admin'),bl
 router.route('/blockhospital/:HospitalID').put(ProtectedRoutes,AllowedTo('admin'),blockhospitals);
 router.route('/AcceptDoctor/:DoctorID').put(ProtectedRoutes,AllowedTo('admin'),AccpetPendingDoctors);
 router.route('/AcceptHospital/:HospitalID').put(ProtectedRoutes,AllowedTo('admin'),AccpetPendingHospitals);
+router.route('/ActiveSubscriper/:id').get(ActiveSubscriberStatus);
 module.exports= router

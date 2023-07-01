@@ -10,6 +10,8 @@ const jwt= require("jsonwebtoken");
 const cloudinary = require('../../../utils/cloudinary');
 const db = require('../../../utils/firebaseConfig');
 const { collection, doc, setDoc } = require("firebase/firestore");
+const Stripe = require('stripe');
+const stripe = new Stripe(process.env.STRIPE_KEY);
 // sign Up
 const signup = catchAsyncErrors(async(req , res , next)=>{
     let {userType} = req.params;
@@ -32,24 +34,46 @@ const signup = catchAsyncErrors(async(req , res , next)=>{
     }
     user =  await newModel.findOne({ email: req.body.email });
     if (!user) {
-        if (userType == 'doctor'){
-            const image =await cloudinary.uploader.upload(req.file.path , {folder: "Doctors verfication Image"})
-            req.body.verficationImage =  image.secure_url;
+        if (userType === 'doctor') {
+            const image = await cloudinary.uploader.upload(req.file.path, { folder: 'Doctors verification Image' });
+            req.body.verficationImage = image.secure_url;
+            // Create a new doctor instance
             let newDoctor = new newModel(req.body);
+          
+            // Set the subscription details
+            newDoctor.subscription.status = 'inactive'; // Set the initial status as inactive
+            newDoctor.subscription.startDate = null; // Set the initial start date as null
+            newDoctor.subscription.endDate = null; // Set the initial end date as null
+            newDoctor.subscription.paymentMethod = null; // Set the initial payment method as null
+            newDoctor.subscription.subscriptionId = null; // Set the initial subscription ID as null
+          
+            // // Create a Stripe customer
+            // const customer = await stripe.customers.create({
+            //   email: newDoctor.email,
+            //   metadata: {
+            //     doctorId: newDoctor._id, // Store the doctor's ID in the customer metadata
+            //   },
+            // });
+            // // Create a Stripe session for the checkout
+            // const session = await stripe.checkout.sessions.create({
+            //     customer: customer.id,
+            //     payment_method_types: ['card'],
+            //     line_items: [
+            //       {
+            //         price: process.env.STRIPE_PLAN_ID, // Use the appropriate Stripe plan ID for your annual subscription
+            //         quantity: 1,
+            //       },
+            //     ],
+            //     mode: 'subscription',
+            //     cancel_url : process.env.CANCEL_URL || 'https://google.com/',
+            //     success_url : process.env.SUCCESS_URL || 'https://youtube.com/'
+            // });
+            // // Update the doctor's subscription details
+            // newDoctor.subscription.status = 'inactive'; // Set the status as pending until the payment is completed
+            // newDoctor.subscription.sessionId = session.id;
             await newDoctor.save();
-            const html = `<h1>We will review your profile and contact you SOON😊...</h1>`;
-            sendEmail(newDoctor.email , html,'Inafant Diary Registration' )
-            const admins = await adminModel.find();
-            for(const admin of admins) {
-                if (admin.verified) {
-                    let adminEmail = admin.email;
-                    const html = `<h1>New Doctor Registeration with Email ${newDoctor.email}</h1>`;
-                    const subject = `New Doctor Registeration`
-                    sendEmail(adminEmail, html, subject)
-                }
-            }
-            res.status(200).json({ Doctor:newDoctor , message :  "Sign Up Successful...'\n'We will review your profile and contact you SOON😊..." });
-        }
+            // Redirect the doctor to the Stripe checkout page
+            res.status(200).json({ Doctor:newDoctor , message :  "Sign Up Successful...'\n'We will review your profile and contact you SOON😊..."});}          
         else if (userType === 'parent') {
             let newUser = new newModel(req.body);
             await newUser.save();
@@ -134,14 +158,20 @@ const signIn = catchAsyncErrors(async (req, res, next) => {
             return next(new AppError(`Your Email has Been Blocked We Will Contact You SOON...`, 400));
         }
         return next(new AppError(`First Confirm Your Email...`, 400));
-    }else if ((!user.isAccpeted || user.isBlocked) && userType ==='doctor'  ){
+    }else if ((!user.isAccpeted || user.isBlocked || user.subscription.status == 'inactive') && userType ==='doctor'  ){
         if(user.isBlocked){
             return next(new AppError(`Your Email has Been Blocked We Will Contact You SOON...`, 400));
         }
+        if(user.subscription.status == 'inactive'){
+            return next(new AppError(`Your Need To Subscribe our WebSite To Access Our Features...`, 400));
+        }
         return next(new AppError(`Your Email Under Reviewing We Will Contact You SOON...`, 400));
-    }else if ((!user.isAccpeted || user.isBlocked) && userType ==='hospital'){
+    }else if ((!user.isAccpeted || user.isBlocked || user.subscription.status == 'inactive') && userType ==='hospital'){
         if(user.isBlocked){
             return next(new AppError(`Your Email has Been Blocked We Will Contact You SOON...`, 400));
+        }
+        if(user.subscription.status == 'inactive'){
+            return next(new AppError(`Your Need To Subscribe our WebSite To Access Our Features...`, 400));
         }
         return next(new AppError(`Your Email Under Reviewing we will Contact You SOON...`, 400));
     }else if (!user.verified && userType ==='admin'){
@@ -150,7 +180,6 @@ const signIn = catchAsyncErrors(async (req, res, next) => {
     let token = jwt.sign({ name : user.name , userId : user._id , type: userType }, process.env.JWT_KEY);
     res.status(200).json({ token})
 })
-
 // Authentication  
 const ProtectedRoutes = catchAsyncErrors(async(req,res,next)=>{
 
@@ -187,8 +216,6 @@ const ProtectedRoutes = catchAsyncErrors(async(req,res,next)=>{
     req.user = user;
     next();
 })
-
-
 // Authorization
 const AllowedTo = (...roles)=>{
     return catchAsyncErrors(async(req,res,next)=>{
@@ -198,7 +225,6 @@ const AllowedTo = (...roles)=>{
         next();
     })
 }
-
 
 module.exports = {
     signup,

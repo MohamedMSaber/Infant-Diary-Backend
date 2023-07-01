@@ -6,6 +6,9 @@ const childModel = require("../../Child/child.model");
 const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 const db = require('../../../utils/firebaseConfig');
 const { collection, doc, setDoc } = require("firebase/firestore");
+const sendEmail = require("../../../utils/sendEmail");
+const Stripe = require('stripe');
+const stripe = new Stripe(process.env.STRIPE_KEY);
 //Get Blocked Parents
 exports.getBlockedParents = catchAsyncErrors(async(req, res)=>{
   const BlockedParents = await parentModel.find({isBlocked: true});
@@ -54,7 +57,31 @@ exports.AccpetPendingDoctors = catchAsyncErrors(async(req, res)=>{
   const {isBlocked, isAccpeted} = await doctorModel.findById(DoctorID);
   const doctor = await doctorModel.findByIdAndUpdate(DoctorID, { isAccpeted: 'true' ,isBlocked:'false' }, { new: true });
   if (doctor && !isBlocked && !isAccpeted) {
-  // Save user in Firebase
+    // Create a Stripe customer
+    const subscriper = await stripe.customers.create({
+      email: doctor.email,
+      metadata: {
+        doctorId: doctor._id, // Store the doctor's ID in the customer metadata
+      },
+    });
+    // Create a Stripe session for the checkout
+    const session = await stripe.checkout.sessions.create({
+      customer: subscriper.id,
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price: process.env.STRIPE_PLAN_ID, // Use the appropriate Stripe plan ID for your annual subscription
+          quantity: 1,
+        },
+      ],
+      mode: 'subscription',
+      cancel_url : process.env.CANCEL_URL || 'https://google.com/',
+      success_url :`https://infant-diary-backend.onrender.com/api/v1/admin/ActiveSubscriper/${doctor._id}`
+    });
+    // Update the doctor's subscription details
+    doctor.subscription.status = 'inactive'; // Set the status as pending until the payment is completed
+    doctor.subscription.sessionId = session.id;
+    // Save user in Firebase
     const user = {
         email:doctor.email,
         name:doctor.name,
@@ -67,6 +94,8 @@ exports.AccpetPendingDoctors = catchAsyncErrors(async(req, res)=>{
     const userDocRef = doc(usersCollectionRef, doctor._id.toString());
     // Set the user document data
     await setDoc(userDocRef, user);
+    const html = `<a href = "${session.url}">Click Here To Subscribe the Website</a>`;
+    sendEmail(doctor.email ,html,"Infant Diary Subscribtion")
     res.status(200).json({message:"This Doctor has Been accepted", doctor});
   }
   else if(isBlocked){
@@ -110,6 +139,30 @@ exports.AccpetPendingHospitals = catchAsyncErrors(async(req, res)=>{
     const {isBlocked, isAccpeted} = await hospitalModel.findById(HospitalID);
     const hospital = await hospitalModel.findByIdAndUpdate(HospitalID, { isAccpeted: 'true',isBlocked:'false' }, { new: true });
     if (hospital && !isBlocked && !isAccpeted) {
+        // Create a Stripe customer
+        const subscriper = await stripe.customers.create({
+          email: hospital.email,
+          metadata: {
+            hospitalId: hospital._id, // Store the hospital's ID in the customer metadata
+          },
+        });
+        // Create a Stripe session for the checkout
+        const session = await stripe.checkout.sessions.create({
+          customer: subscriper.id,
+          payment_method_types: ['card'],
+          line_items: [
+            {
+              price: process.env.STRIPE_PLAN_ID, // Use the appropriate Stripe plan ID for your annual subscription
+              quantity: 1,
+            },
+          ],
+          mode: 'subscription',
+          cancel_url : process.env.CANCEL_URL || 'https://google.com/',
+          success_url :`https://infant-diary-backend.onrender.com/api/v1/admin/ActiveSubscriper/${hospital._id}`
+        });
+        // Update the hospital's subscription details
+        hospital.subscription.status = 'inactive'; // Set the status as pending until the payment is completed
+        hospital.subscription.sessionId = session.id;
         res.status(200).json({message:"This hospital has Been accepted", hospital});
     }
     else if(isBlocked){
@@ -128,6 +181,23 @@ exports.blockhospitals = catchAsyncErrors(async(req, res)=>{
   }
   else {
     res.status(401).json({message:"Invalid hospital ID"});
+  }
+})
+// Active Subscription Status
+exports.ActiveSubscriberStatus = catchAsyncErrors(async (req,res)=>{
+  const {id} = req.params;
+  // Search for the user in all 3 models
+  const hospital = await hospitalModel.findById(id);
+  const doctor = await doctorModel.findById(id);
+  const user = hospital || doctor 
+  if (user) {
+    // Update the subscription status to "active"
+    user.subscription.status = 'active';
+    await user.save();
+    sendEmail(user.email, '<h5>Your Account Has Been Active</h5>','Account Activated');
+    res.status(200).json({ status: 'success', message: 'Subscription status updated to active' });
+  } else {
+    res.status(404).json({ status: 'error', message: 'User not found' });
   }
 })
 //generate bar Chart for users count

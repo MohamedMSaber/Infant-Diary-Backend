@@ -16,7 +16,14 @@ const schema = Schema({
     vaccines:[{type:mongoose.Schema.Types.ObjectId,ref:"vaccine"}],
     isBlocked: { type: Boolean, default: false },
     isAccpeted:{type: Boolean, default: false},
-    verficationImage:{type: String, required: [true, 'verfication Image is required']}
+    verficationImage:{type: String, required: [true, 'verfication Image is required']},
+    subscription: {
+        status: { type: String, enum: ['active', 'inactive'], default: 'inactive' },
+        startDate: { type: Date },
+        endDate: { type: Date },
+        paymentMethod: { type: String },
+        subscriptionId: { type: String }
+    }
 },{ timestamps: true })
 
 schema.pre('save', async function () { 
