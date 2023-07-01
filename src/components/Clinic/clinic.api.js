@@ -9,5 +9,4 @@ router.route('/:clinicID')
                 .get(ProtectedRoutes, AllowedTo('doctor','parent'),getClinic)
                 .put(ProtectedRoutes, AllowedTo('doctor'), updateClinic)
                 .delete(ProtectedRoutes, AllowedTo('doctor'),deleteclinic);
-
 module.exports= router

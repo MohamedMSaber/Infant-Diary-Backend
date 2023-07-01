@@ -23,11 +23,12 @@ exports.getClinics = catchAsyncErrors(async (req, res) => {
 
 // update clinic
 exports.updateClinic = catchAsyncErrors(async (req, res)=>{
-  const {clincID} = req.params;
-  const clinic = await clinicModel.findById(clincID);
+  const {clinicID} = req.params;
+  const clinic = await clinicModel.findById(clinicID);
   const doctorID = req.user._id;
+  console.log(doctorID);
   if(clinic.doctorID.equals(doctorID)){
-    let updatedclinic = await clinicModel.findByIdAndUpdate(clincID, req.body,{new:true} );
+    let updatedclinic = await clinicModel.findByIdAndUpdate(clinicID, req.body,{new:true} );
     if (!updatedclinic) {
         return next(new AppError(`clinic Not Found To Update`, 404));
     }
