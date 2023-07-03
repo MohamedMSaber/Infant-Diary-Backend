@@ -37,7 +37,8 @@ exports.addReply = catchAsyncErrors(async (req, res) => {
   let comment = await commentModel.findById(commentID);
   if (comment) {
     req.body.createdBy = req.user._id;
-    req.body.createdByModel = req.user.role;
+    req.body.createdWith = req.user.role;
+    console.log(req.user.role);
     comment.reply.push(req.body);
     await comment.save();
     const ownerID = comment.createdBy;

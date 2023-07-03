@@ -18,10 +18,10 @@ const schema = Schema({
             body:{type: String , required: [true, 'body is required']  },
             createdBy:{
                 type: Types.ObjectId,
-                refPath: 'createdByModel',
+                refPath: 'createdWith',
                 required:true
             },
-            createdByModel: {
+            createdWith: {
                 type: String,
                 required: true,
                 enum: ['doctor', 'parent', 'hospital']
