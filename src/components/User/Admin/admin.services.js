@@ -25,7 +25,7 @@ exports.getUserById = async (req, res) => {
   } else if (hospital) {
     res.status(200).json({ user: hospital});
   } else {
-    res.status(404).json({ message: 'User not found' });
+    res.status(204).json({ message: 'User not found' });
   } 
 };
 //Get Blocked Parents
@@ -34,7 +34,7 @@ exports.getBlockedParents = catchAsyncErrors(async(req, res)=>{
   if (BlockedParents.length >0) {
       res.status(200).json({BlockedParents})
   } else {
-      res.json({message:"No Blocked Parents"})
+      res.status(204).json({message:"No Blocked Parents"})
   }
 });
 //Block and UnBlock Parent
@@ -58,7 +58,7 @@ exports.getPendingDoctors = catchAsyncErrors(async(req, res)=>{
     if (pendingDoctors.length >0) {
         res.status(200).json({pendingDoctors})
     } else {
-        res.json({message:"No pending doctors"})
+        res.status(204).json({message:"No pending doctors"})
     }
 });
 //Get Blocked Doctors
@@ -67,7 +67,7 @@ exports.getBlockedDoctors = catchAsyncErrors(async(req, res)=>{
   if (BlockedDoctors.length >0) {
       res.status(200).json({BlockedDoctors})
   } else {
-      res.status(404).json({message:"No Blocked doctors"})
+      res.status(204).json({message:"No Blocked doctors"})
   }
 });
 //Accept pending doctors or unBlock
@@ -140,7 +140,7 @@ exports.getPendingHospitals = catchAsyncErrors(async(req, res)=>{
     if (pendingHospitals.length >0) {
         res.status(200).json({pendingHospitals})
     } else {
-        res.json({message:"No pending Hospitals"})
+        res.status(204).json({message:"No pending Hospitals"})
     }
 });
 //Get Blocked Hospitals 
@@ -149,7 +149,7 @@ exports.getBlockedHospitals = catchAsyncErrors(async(req, res)=>{
   if (BlockedHospitals.length >0) { 
       res.status(200).json({BlockedHospitals})
   } else {
-      res.json({message:"No Blocked Hospitals"})
+      res.status(204).json({message:"No Blocked Hospitals"})
   }
 });
 //Accept pending Hospitals or unBlock
@@ -190,7 +190,7 @@ exports.AccpetPendingHospitals = catchAsyncErrors(async(req, res)=>{
       res.status(200).json({message:"This Hospital has Been UnBlocked", hospital});
     }
     else {
-        res.status(401).json({message:"Invalid hospital"});
+      res.status(401).json({message:"Invalid hospital"});
     }
 });
 //block hospital

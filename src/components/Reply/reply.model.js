@@ -1,4 +1,4 @@
-const { Schema, model,Types} = require("mongoose");
+const { Schema, model, Types} = require("mongoose");
 
 
 const schema = Schema({
@@ -13,20 +13,13 @@ const schema = Schema({
         required: true,
         enum: ['doctor', 'parent', 'hospital']
     },
-    postID:{type: Types.ObjectId, ref:"post"}
-},{ timestamps: true, toJSON: { virtuals: true }, toObject:{ virtuals: true } })
+    commentID:{type: Types.ObjectId, ref:"comment"}
+},{ timestamps: true })
 
-schema.virtual('replies',{
-    ref:'reply',
-    localField: '_id',
-    foreignField: 'commentID'
-});
 schema.pre(/^find/, function () {
-    this.populate('replies' , '');
     this.populate({
         path: 'createdBy',
         select: 'name ' // Exclude the childerns field
     });
 });
-
-module.exports = model('comment' , schema);
+module.exports = model('reply' , schema);

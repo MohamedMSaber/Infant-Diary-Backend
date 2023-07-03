@@ -27,7 +27,7 @@ exports.getPosts = catchAsyncErrors(async (req, res) => {
   }
   apiFeatures.mongooseQuery.populate({
     path: 'createdBy',
-    select: 'name -_id' 
+    select: 'name' 
   });
   posts = await apiFeatures.mongooseQuery
   

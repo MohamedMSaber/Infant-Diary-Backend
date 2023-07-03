@@ -10,6 +10,7 @@ exports.createClinic = catchAsyncErrors(async (req, res) => {
   await clinic.save();
   res.status(200).json({clinic,message:"You have been created clinic Successfully..."});
 });
+//get All Clinics
 exports.getClinics = catchAsyncErrors(async (req, res) => {
   let apiFeatures = new ApiFeatures(clinicModel.find(), req.query).paginate().fields().filter().sort()
   if (req.query.keyword) {

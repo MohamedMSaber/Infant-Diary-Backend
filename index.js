@@ -34,6 +34,8 @@ app.use("/api/v1/standard", indexRouter.standardRouter)
 app.use("/api/v1/vaccine", indexRouter.vaccineRouter)
 app.use("/api/v1/child", indexRouter.childRouter)
 app.use("/api/v1/doctor", indexRouter.doctorRouter)
+app.use("/api/v1/reply", indexRouter.replyRouter)
+
 
 app.all('*', (req, res,next) =>{
     next(new AppError(`Route : ${req.originalUrl} not found on Server`, 404));
