@@ -5,8 +5,6 @@ const postModel = require("./post.model");
 const cloudinary = require('../../utils/cloudinary');
 const commentModel = require("../Comment/comment.model");
 
-
-
 // Create Post
 exports.createPost = catchAsyncErrors(async (req, res) => {
   if (req.file && req.file.path) {
@@ -19,7 +17,6 @@ exports.createPost = catchAsyncErrors(async (req, res) => {
   await newPost.save();
   res.status(200).json({newPost,message:"You have been created post Successfully..."});
 });
-
 // get All Posts
 exports.getPosts = catchAsyncErrors(async (req, res) => {
   req.query.sort = '-createdAt';
@@ -36,7 +33,6 @@ exports.getPosts = catchAsyncErrors(async (req, res) => {
   
   res.status(200).json({ page: apiFeatures.page, posts });
 });
-
 // update Post
 exports.updatePost = catchAsyncErrors(async (req, res)=>{
   const {postID} = req.params;
@@ -62,7 +58,6 @@ exports.updatePost = catchAsyncErrors(async (req, res)=>{
     res.status(404).json({message: "You do not have permission to update this post."});
   }
 })
-
 // Delete the post
 exports.deletePost = catchAsyncErrors(async (req, res)=>{
   const {postID} = req.params;
@@ -85,7 +80,6 @@ exports.deletePost = catchAsyncErrors(async (req, res)=>{
     res.status(404).json({message: "You do not have permission to delete this post."});
   }
 })
-
 // Get Specific Post
 exports.getPost = catchAsyncErrors(async (req, res) => {
   const {postID} = req.params;

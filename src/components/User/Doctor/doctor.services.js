@@ -4,6 +4,8 @@ const doctorModel = require('../Doctor/doctor.model');
 const clinicModel = require('../../Clinic/clinic.model');
 const cloudinary = require("../../../utils/cloudinary");
 
+// get USer By ID 
+
 // get ALL Doctor with his clinics for user
 exports.getDoctors = catchAsyncErrors(async (req, res) => {
   let apiFeatures = new ApiFeatures(doctorModel.find({isAccpeted: true ,isBlocked: false}), req.query).paginate().fields().filter().sort()
@@ -35,7 +37,6 @@ exports.updateDoctorProfile = catchAsyncErrors(async (req, res) => {
   const doctorID = req.user._id;
   const doctor = await doctorModel.findById(doctorID);
   if (doctor) {
-    console.log(req.body);
     const newDoctor = await doctorModel.findByIdAndUpdate(doctorID, req.body, { new: true });
     res.status(200).json({ newDoctor, message: "your profile has been updated" });
   } else {

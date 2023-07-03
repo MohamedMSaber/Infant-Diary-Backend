@@ -9,6 +9,25 @@ const { collection, doc, setDoc } = require("firebase/firestore");
 const sendEmail = require("../../../utils/sendEmail");
 const Stripe = require('stripe');
 const stripe = new Stripe(process.env.STRIPE_KEY);
+
+//get USer by ID 
+exports.getUserById = async (req, res) => {
+  const { userID } = req.params;
+  // Search for the user in all 3 models
+  const parent = await parentModel.findById(userID);
+  const doctor = await doctorModel.findById(userID);
+  const hospital = await hospitalModel.findById(userID);
+  // Determine the user type and return the user object
+  if (parent) {
+    res.status(200).json({ user: parent});
+  } else if (doctor) {
+    res.status(200).json({ user: doctor});
+  } else if (hospital) {
+    res.status(200).json({ user: hospital});
+  } else {
+    res.status(404).json({ message: 'User not found' });
+  } 
+};
 //Get Blocked Parents
 exports.getBlockedParents = catchAsyncErrors(async(req, res)=>{
   const BlockedParents = await parentModel.find({isBlocked: true});
