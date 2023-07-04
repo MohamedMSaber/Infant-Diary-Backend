@@ -27,7 +27,8 @@ const schema = Schema({
         endDate: { type: Date },
         paymentMethod: { type: String },
         subscriptionId: { type: String }
-    }
+    },
+    code: { type: String}
 },{ timestamps: true, toJSON: { virtuals: true }, toObject:{ virtuals: true } })
 
 schema.virtual('clinics',{

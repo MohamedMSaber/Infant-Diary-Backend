@@ -225,11 +225,76 @@ const AllowedTo = (...roles)=>{
         next();
     })
 }
+//send Code 
+const sendCode = catchAsyncErrors(async (req, res) => {
+    const { email } = req.body;
+    let UserModel; // Define a variable to store the user model
+    // Search for the user in all 3 models
+    const parent = await parentModel.findOne({ email });
+    const doctor = await doctorModel.findOne({ email });
+    const hospital = await hospitalModel.findOne({ email });
+    let user; // Define a variable to store the user document
+    if (parent) {
+      UserModel = parentModel;
+      user = parent;
+    } 
+    else if (doctor) {
+      UserModel = doctorModel;
+      user = doctor;
+    } 
+    else if (hospital) {
+      UserModel = hospitalModel;
+      user = hospital;
+    }
+    if (!user) {
+      res.json({ message: "Invalid Account" });
+    } else {
+      const code = Math.floor(1000 + Math.random() * 9000);
+      const message = `<p>Use this code to reset your password: ${code}</p>`;
+      await UserModel.findByIdAndUpdate(user._id, { code });
+      sendEmail(user.email, message, 'Reset Password Code');
+      res.json({ message: "Code has been sent successfully" });
+    }
+});
+// Reset Password 
+const restPassword = catchAsyncErrors(async (req, res) => {
+    const { email, code, newPassword } = req.body;
+    let userModel; // Define a variable to store the user model
+    // Search for the user in all 3 models
+    const parent = await parentModel.findOne({ email });
+    const doctor = await doctorModel.findOne({ email });
+    const hospital = await hospitalModel.findOne({ email });
+    if (parent) {
+        userModel = parentModel;
+        user = parent;
+      } 
+      else if (doctor) {
+        userModel = doctorModel;
+        user = doctor;
+      } 
+      else if (hospital) {
+        userModel = hospitalModel;
+        user = hospital;
+      }
+    if (!user) {
+        res.json({ message: "invalid Account" })
+    } else {
+        if (user.code.toString() != code.toString()) {
+            res.json({ message: "invalid Code" })
+        } else {
+            const hashedPassword = await bcrypt.hash(newPassword, parseInt(process.env.saltRound))
+            await userModel.findByIdAndUpdate(user._id, { password: hashedPassword, code: "" })
+            res.json({ message: "Password Has Been Rest" })
+        }
+    }
+})
 
 module.exports = {
     signup,
     confirmEmail,
     signIn,
     ProtectedRoutes,
-    AllowedTo
+    AllowedTo,
+    sendCode,
+    restPassword
 }

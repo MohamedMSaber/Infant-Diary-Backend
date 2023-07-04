@@ -73,6 +73,7 @@ exports.deletePost = catchAsyncErrors(async (req, res)=>{
     let deletedPost = await postModel.findByIdAndDelete(postID);
     const comments = await commentModel.find({ postID: postID });
     const commentIDs = comments.map(comment => comment._id);
+    // Find and delete the associated comments
     await commentModel.deleteMany({postID: postID})
     // Find and delete the associated replies
     await replyModel.deleteMany({ commentID: { $in: commentIDs } });

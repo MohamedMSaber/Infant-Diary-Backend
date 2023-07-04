@@ -1,17 +1,16 @@
-const { Schema, model, Types} = require("mongoose");
+const { Schema, model} = require("mongoose");
 const bcrypt = require('bcrypt');
 
 const schema = Schema({
     name: { type: String, required: [true, 'name is required'], trim: true, minLenght: 3},
     email: { type: String, required: [true, 'email is required'], unique: [true, "email must be UNIQUE"]},
     password: { type: String, required: [true, 'password is required'], minlenght: [6, "password must be at least 6 characters"]},
-    // age: { type: Number,required: [true, 'age is required'],},
-    // gender: { type: String, required: [true, 'gender is required'], enum: ['Male', 'Female']},
     phone: { type: String},
     address: { type: String},
     isBlocked: { type: Boolean, default: false },
     emailConfirm: { type: Boolean, default: false},
-    role:{type: String, default:'parent'}
+    role:{type: String, default:'parent'},
+    code: { type: String}
 },{ timestamps: true, toJSON: { virtuals: true }, toObject:{ virtuals: true } });
 
 schema.virtual('childerns',{
