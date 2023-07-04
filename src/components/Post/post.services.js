@@ -4,6 +4,7 @@ const ApiFeatures = require("../../utils/ApiFeatures")
 const postModel = require("./post.model");
 const cloudinary = require('../../utils/cloudinary');
 const commentModel = require("../Comment/comment.model");
+const replyModel = require("../Reply/reply.model");
 
 // Create Post
 exports.createPost = catchAsyncErrors(async (req, res) => {
@@ -70,7 +71,11 @@ exports.deletePost = catchAsyncErrors(async (req, res)=>{
       await cloudinary.uploader.destroy(`Posts/${public_id}`);
     }
     let deletedPost = await postModel.findByIdAndDelete(postID);
+    const comments = await commentModel.find({ postID: postID });
+    const commentIDs = comments.map(comment => comment._id);
     await commentModel.deleteMany({postID: postID})
+    // Find and delete the associated replies
+    await replyModel.deleteMany({ commentID: { $in: commentIDs } });
     if (!deletedPost) {
         return next(new AppError(`post Not Found To delete`, 404));
     }

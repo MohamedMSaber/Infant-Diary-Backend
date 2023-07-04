@@ -6,7 +6,8 @@ const schema = Schema({
     type:{type:String, required:[true, 'type is required']}, //instructions or article ... 
     age:{type:Number, required:[true, 'age is required']},
     link:{type:String},
-    videoLink:{type:String}
+    videoLink:{type:String},
+    image: { type: String}
 },{ timestamps: true })
 
 module.exports = model('information' , schema);

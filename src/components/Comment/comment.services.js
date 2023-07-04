@@ -6,7 +6,7 @@ const parentModel = require('../User/Parent/parent.model')
 const doctorModel = require('../User/Doctor/doctor.model');
 const adminModel = require('../User/Admin/admin.model')
 const postModel = require("../Post/post.model")
-
+const replyModel = require("../Reply/reply.model")
 // Create Comment
 exports.addComment = catchAsyncErrors(async (req, res) => {
   const {postID} = req.params;  
@@ -53,6 +53,7 @@ exports.deleteComment = catchAsyncErrors(async (req,res)=>{
   const comment = await commentModel.findById(commentID);
   if(comment.createdBy.equals(userID)){
       let deletedComment = await commentModel.findByIdAndDelete(commentID);
+      await replyModel.deleteMany({commentID: commentID})
       if (!deletedComment) {
           return next(new AppError(`comment Not Found To delete`, 404));
       }
