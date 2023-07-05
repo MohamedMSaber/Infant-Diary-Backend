@@ -49,11 +49,11 @@ exports.updateChild = catchAsyncErrors(async (req, res)=>{
       const image =await  cloudinary.uploader.upload(req.file.path , {folder: "children"})
       req.body.childPic =  image.secure_url;
     }
-    let child = await childModel.findByIdAndUpdate(childID, req.body,{new:true} );
-    if (!child) {
+    let updatedChild = await childModel.findByIdAndUpdate(childID, req.body,{new:true} );
+    if (!updatedChild) {
         return next(new AppError(`child Not Found To Update`, 404));
     }
-    res.status(200).json({ message: `child has Been Updated`  , child});
+    res.status(200).json({ message: `child has Been Updated`  , updatedChild});
   }
   else {
     res.status(404).json({message: "You do not have permission to update this children."});
