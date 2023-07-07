@@ -6,7 +6,7 @@ const router=require('express').Router();
 router.route('/').post(ProtectedRoutes,AllowedTo('doctor'),createClinic);
 router.route('/').get(ProtectedRoutes, AllowedTo('doctor','parent','admin'),getClinics);
 router.route('/:clinicID')  
-                .get(ProtectedRoutes, AllowedTo('doctor','parent'),getClinic)
+                .get(ProtectedRoutes, AllowedTo('doctor','parent','admin'),getClinic)
                 .put(ProtectedRoutes, AllowedTo('doctor'), updateClinic)
                 .delete(ProtectedRoutes, AllowedTo('doctor'),deleteclinic);
 module.exports= router

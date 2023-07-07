@@ -45,7 +45,7 @@ exports.updateDoctorProfile = catchAsyncErrors(async (req, res) => {
 });
 //Delete Docotor profile
 exports.deleteDocotorProfile = catchAsyncErrors(async (req, res) => {
-  const { doctorID } = req.params; 
+  const  doctorID  = req.params.doctorID || req.user._id; 
   const doctor = await doctorModel.findById(doctorID);
   if (doctor) {
     if (doctor.nationalIdPhoto) {

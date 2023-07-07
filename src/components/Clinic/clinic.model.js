@@ -6,11 +6,11 @@ const schema = Schema({
     email: { type: String, required: [true, 'email is required']},
     address: { type: String, required: [true, 'address is required']},
     city: { type: String, required: [true, 'city is required']},
-    state: { type: String, required: [true,'state is required']},
-    zip: { type: String, required: [true, 'zip is required']},
     phone: { type: String, required: [true, 'phone number is required']},
     link: { type: String, required: [true, 'hospital link is required']},
-    doctorID: { type: Types.ObjectId , ref:"doctor" }
+    doctorID: { type: Types.ObjectId , ref:"doctor" },
+    lat: { type: String, required: [true, 'lat is required']},
+    lng: { type: String, required: [true, 'lng is required']}
 },{ timestamps: true })
 
 

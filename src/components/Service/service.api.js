@@ -5,7 +5,7 @@ const router=require('express').Router();
 
 router.route('/').post(ProtectedRoutes,AllowedTo('hospital'),createService);
 router.route('/:serviceID')
-                        .get(ProtectedRoutes,AllowedTo('hospital','parent','hospital','doctor'),getService)
+                        .get(ProtectedRoutes,AllowedTo('hospital','parent','admin','doctor'),getService)
                         .put(ProtectedRoutes,AllowedTo('hospital'),updateService)
                         .delete(ProtectedRoutes,AllowedTo('hospital'),deleteService);
 

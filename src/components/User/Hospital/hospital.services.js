@@ -7,7 +7,7 @@ const  cloudinary  = require("../../../utils/cloudinary");
 
 //get all hospitals and search by hospital name and service name
 exports.getHospitals = catchAsyncErrors(async (req, res) => {
-  const hospitals = await hospitalModel.find({isAccpeted: true ,isBlocked: false}).populate('services', 'name age');
+  const hospitals = await hospitalModel.find({isAccpeted: true ,isBlocked: false}).populate('services', 'name age').populate('vaccines','name');
   const filteredHospitals = [];
   const filteredServices = [];
   // Search for hospitals with the given keyword and if input service name
@@ -68,7 +68,7 @@ exports.getHospitals = catchAsyncErrors(async (req, res) => {
 exports.getSpecificHospital = catchAsyncErrors(async (req, res) => {
   const  hospitalID  = req.params.hospitalID || req.user._id; 
   // Find the hospital by ID
-  const hospital = await hospitalModel.findById(hospitalID).populate('services', 'name age');
+  const hospital = await hospitalModel.findById(hospitalID).populate('services', 'name age').populate('vaccines','name');
   if (!hospital) {
     res.status(404).json({ message: 'Hospital not found' });
   }
@@ -120,6 +120,44 @@ exports.deleteHospitalProfile = catchAsyncErrors(async (req, res) => {
   res.status(200).json({ message: `this hospital has Been deleted`  , deletedHospital});
   
 });
-
+//Add Available Vaccines 
+exports.addVaccines = catchAsyncErrors(async (req, res) => {
+  const hospitalID = req.user._id;
+  const {vaccineID} = req.params;
+  const hospital = await hospitalModel.findById(hospitalID);
+  if (hospital) {
+    // Check if the vaccine ID already exists in the vaccines array
+    const existingVaccineIndex = hospital.vaccines.findIndex((vaccine) => vaccine.toString() === vaccineID);
+    if (existingVaccineIndex !== -1) {
+      res.status(400).json({ message: 'Vaccine ID already exists' });
+    }
+    // Add the vaccine ID to the vaccines array
+    hospital.vaccines.push(vaccineID);
+    await hospital.save();
+    res.status(200).json({ message: 'Vaccine added to hospital successfully' });
+  } else {
+    res.status(404).json({ message: 'Hospital not found' });
+  }
+});
+//Delete Vaccine
+exports.deleteVaccine = catchAsyncErrors(async (req, res) => {
+  const hospitalID = req.user._id;
+  const { vaccineID } = req.params;
+  const hospital = await hospitalModel.findById(hospitalID);
+  
+  if (hospital) {
+    // Check if the vaccine ID exists in the vaccines array
+    const existingVaccineIndex = hospital.vaccines.findIndex((vaccine) => vaccine.toString() === vaccineID);
+    if (existingVaccineIndex === -1) {
+      return res.status(404).json({ message: 'Vaccine not found in hospital' });
+    }
+    // Remove the vaccine ID from the vaccines array
+    hospital.vaccines.splice(existingVaccineIndex, 1);
+    await hospital.save();
+    res.status(200).json({ message: 'Vaccine removed from hospital successfully' });
+  } else {
+    res.status(404).json({ message: 'Hospital not found' });
+  }
+})
 // Get Specific hospital
 exports.getHospital = getSpecficFun(hospitalModel);

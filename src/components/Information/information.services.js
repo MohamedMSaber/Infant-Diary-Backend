@@ -32,8 +32,12 @@ exports.getInformation = catchAsyncErrors(async (req, res) => {
 });
 //get All information
 exports.getAllInformation = catchAsyncErrors(async (req, res) => {
-const inforamtion  = await informationModel.find();
-res.status(200).json({ inforamtion });
+    const inforamtion  = await informationModel.find();
+    if (req.query.keyword) {
+      let word = req.query.keyword
+      inforamtion.mongooseQuery.find({ $or: [{ age: { $regex: word, $options: 'i' } },{ body: { $regex: word, $options: 'i' } }, { topic: { $regex: word, $options: 'i' } }] })
+    }
+    res.status(200).json({ inforamtion });
 })
 //update information
 exports.updateInformation = catchAsyncErrors(async (req, res)=>{

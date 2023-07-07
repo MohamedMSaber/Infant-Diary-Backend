@@ -11,7 +11,7 @@ exports.addFAQ = catchAsyncErrors(async (req, res) => {
 });
 //get All questions
 exports.getQuestions = catchAsyncErrors(async (req, res) => {
-  let apiFeatures = new ApiFeatures(questionModel.find(), req.query).paginate().fields().filter().sort();
+  let apiFeatures = new ApiFeatures(questionModel.find(), req.query).paginate().fields().sort();
   if (req.query.keyword) {
     let word = req.query.keyword
     apiFeatures.mongooseQuery.find({ $or: [{ age: { $regex: word, $options: 'i' } },{ body: { $regex: word, $options: 'i' } }, { answer: { $regex: word, $options: 'i' } },{ questionHeading: { $regex: word, $options: 'i' } }] })

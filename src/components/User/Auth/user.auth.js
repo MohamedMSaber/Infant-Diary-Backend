@@ -39,40 +39,18 @@ const signup = catchAsyncErrors(async(req , res , next)=>{
             req.body.verficationImage = image.secure_url;
             // Create a new doctor instance
             let newDoctor = new newModel(req.body);
-          
-            // Set the subscription details
-            newDoctor.subscription.status = 'inactive'; // Set the initial status as inactive
-            newDoctor.subscription.startDate = null; // Set the initial start date as null
-            newDoctor.subscription.endDate = null; // Set the initial end date as null
-            newDoctor.subscription.paymentMethod = null; // Set the initial payment method as null
-            newDoctor.subscription.subscriptionId = null; // Set the initial subscription ID as null
-          
-            // // Create a Stripe customer
-            // const customer = await stripe.customers.create({
-            //   email: newDoctor.email,
-            //   metadata: {
-            //     doctorId: newDoctor._id, // Store the doctor's ID in the customer metadata
-            //   },
-            // });
-            // // Create a Stripe session for the checkout
-            // const session = await stripe.checkout.sessions.create({
-            //     customer: customer.id,
-            //     payment_method_types: ['card'],
-            //     line_items: [
-            //       {
-            //         price: process.env.STRIPE_PLAN_ID, // Use the appropriate Stripe plan ID for your annual subscription
-            //         quantity: 1,
-            //       },
-            //     ],
-            //     mode: 'subscription',
-            //     cancel_url : process.env.CANCEL_URL || 'https://google.com/',
-            //     success_url : process.env.SUCCESS_URL || 'https://youtube.com/'
-            // });
-            // // Update the doctor's subscription details
-            // newDoctor.subscription.status = 'inactive'; // Set the status as pending until the payment is completed
-            // newDoctor.subscription.sessionId = session.id;
             await newDoctor.save();
-            // Redirect the doctor to the Stripe checkout page
+            const html = `<h1>We will review your profile and contact you SOON😊...</h1>`;
+            sendEmail(newDoctor.email , html, 'Inafant Diary Registration')
+            const admins = await adminModel.find();
+            for(const admin of admins) {
+                if (admin.verified) {
+                    let adminEmail = admin.email;
+                    const html = `<h1>New Doctor Registeration with Email ${newDoctor.email}</h1>`;
+                    const subject = `New Doctor Registeration`
+                    sendEmail(adminEmail, html, subject)
+                }
+            }
             res.status(200).json({ Doctor:newDoctor , message :  "Sign Up Successful...'\n'We will review your profile and contact you SOON😊..."});}          
         else if (userType === 'parent') {
             let newUser = new newModel(req.body);
