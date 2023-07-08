@@ -9,7 +9,7 @@ router.route('/').post(ProtectedRoutes,AllowedTo('admin'),uploadingSingleFile('i
 router.route('/child/:childId').get(ProtectedRoutes,AllowedTo('parent'),getInformation);
 router.route('/:id').put(ProtectedRoutes,AllowedTo('admin'),uploadingSingleFile('image'),updateInformation)
                     .delete(ProtectedRoutes,AllowedTo('admin'),deleteInformation)
-                    .get(ProtectedRoutes,AllowedTo('parent', 'admin'),getSpecificInformation);
+                    .get(ProtectedRoutes,AllowedTo('parent', 'admin','doctor'),getSpecificInformation);
 
 module.exports= router
 
