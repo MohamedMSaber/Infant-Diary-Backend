@@ -4,7 +4,6 @@ const doctorModel = require('../Doctor/doctor.model');
 const clinicModel = require('../../Clinic/clinic.model');
 const cloudinary = require("../../../utils/cloudinary");
 
-// get USer By ID 
 
 // get ALL Doctor with his clinics for user
 exports.getDoctors = catchAsyncErrors(async (req, res) => {
