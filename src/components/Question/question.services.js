@@ -10,15 +10,37 @@ exports.addFAQ = catchAsyncErrors(async (req, res) => {
     res.status(200).json({question,message:"You have been added Question Successfully..."});
 });
 //get All questions
+//get All questions
 exports.getQuestions = catchAsyncErrors(async (req, res) => {
+  const { keyword } = req.query;
+
   let apiFeatures = new ApiFeatures(questionModel.find(), req.query).paginate().fields().sort();
-  if (req.query.keyword) {
-    let word = req.query.keyword
-    apiFeatures.mongooseQuery.find({ $or: [{ age: { $regex: word, $options: 'i' } },{ body: { $regex: word, $options: 'i' } }, { answer: { $regex: word, $options: 'i' } },{ questionHeading: { $regex: word, $options: 'i' } }] })
+  if (keyword) {
+    const parsedAge = parseInt(keyword);
+    if (isNaN(parsedAge)) {
+      apiFeatures.mongooseQuery.find({
+        $or: [
+          { body: { $regex: keyword, $options: 'i' } },
+          { answer: { $regex: keyword, $options: 'i' } },
+          { questionHeading: { $regex: keyword, $options: 'i' } }
+        ]
+      });
+    } else {
+      apiFeatures.mongooseQuery.find({
+        $or: [
+          { age: parsedAge },
+          { body: { $regex: keyword, $options: 'i' } },
+          { answer: { $regex: keyword, $options: 'i' } },
+          { questionHeading: { $regex: keyword, $options: 'i' } }
+        ]
+      });
+    }
   }
-  questions = await apiFeatures.mongooseQuery
+
+  const questions = await apiFeatures.mongooseQuery;
   res.status(200).json({ page: apiFeatures.page, questions });
 });
+
 // Update Question
 exports.updateFAQ = updateFun(questionModel);
 // Get Specific Question
