@@ -8,7 +8,7 @@ const cloudinary = require("../../../utils/cloudinary");
 
 // get ALL Doctor with his clinics for user
 exports.getDoctors = catchAsyncErrors(async (req, res) => {
-  let apiFeatures = new ApiFeatures(doctorModel.find({isAccpeted: true ,isBlocked: false}), req.query).paginate().fields().filter().sort()
+  let apiFeatures = new ApiFeatures(doctorModel.find({isAccpeted: true ,isBlocked: false}), req.query).fields().filter().sort()
   if (req.query.keyword) {
     let word = req.query.keyword
     apiFeatures.mongooseQuery.find({ $or: [{ name: { $regex: word, $options: 'i' } }, { specialization: { $regex: word, $options: 'i' } }] }).select('-ratings');

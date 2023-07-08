@@ -12,7 +12,7 @@ exports.createClinic = catchAsyncErrors(async (req, res) => {
 });
 //get All Clinics
 exports.getClinics = catchAsyncErrors(async (req, res) => {
-  let apiFeatures = new ApiFeatures(clinicModel.find(), req.query).paginate().fields().filter().sort()
+  let apiFeatures = new ApiFeatures(clinicModel.find(), req.query).fields().filter().sort()
   if (req.query.keyword) {
     let word = req.query.keyword
     apiFeatures.mongooseQuery.find({ $or: [{ name: { $regex: word, $options: 'i' } }, { address: { $regex: word, $options: 'i' } },{ link: { $regex: word, $options: 'i' } }] })

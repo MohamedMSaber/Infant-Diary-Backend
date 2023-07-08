@@ -21,7 +21,7 @@ exports.createPost = catchAsyncErrors(async (req, res) => {
 // get All Posts
 exports.getPosts = catchAsyncErrors(async (req, res) => {
   req.query.sort = '-createdAt';
-  let apiFeatures = new ApiFeatures(postModel.find(), req.query).paginate().fields().filter().sort();
+  let apiFeatures = new ApiFeatures(postModel.find(), req.query).fields().filter().sort();
   if (req.query.keyword) {
     let word = req.query.keyword
     apiFeatures.mongooseQuery.find({ $or: [{ body: { $regex: word, $options: 'i' } }] })
