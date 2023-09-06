@@ -10,5 +10,4 @@ router.get("/:userType/confirmEmail/:id", confirmEmail)
 router.post("/:userType/signIn", signIn)
 
 
-
 module.exports = router

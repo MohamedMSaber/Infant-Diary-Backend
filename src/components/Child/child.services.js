@@ -210,12 +210,12 @@ exports.generateChartReport = catchAsyncErrors(async (req, res) => {
       biggestMeasurement = measurement;
     }
   });
-
+  console.log(biggestMeasurement.age, child.gender);
   const childStandard = await standardModel.findOne({
     age: biggestMeasurement.age,
     gender: child.gender,
   });
-
+  console.log(childStandard);
   // Generate chart data for weight
   const weightChartData = {
     labels: ['Weight'],
